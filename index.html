@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Keiko is an interactive Vim dojo built for deliberate, keyboard-first practice." />
+    <title>Keiko — a Vim muscle-memory dojo</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='28' fill='%234a45c6'/%3E%3Ctext x='50' y='70' text-anchor='middle' font-family='Georgia' font-size='65' font-weight='700' fill='white'%3EK%3C/text%3E%3C/svg%3E" />
+    <script>
+      (() => {
+        try {
+          const saved = JSON.parse(localStorage.getItem("keiko-vim-dojo-v1") || "{}").theme || "system";
+          const dark = saved === "dark" || (saved === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.dataset.theme = saved;
+          document.documentElement.dataset.colorScheme = dark ? "dark" : "light";
+          document.documentElement.style.colorScheme = dark ? "dark" : "light";
+        } catch { /* The app will restore the default theme after it loads. */ }
+      })();
+    </script>
+    <link rel="stylesheet" href="styles.css?v=8" />
+    <script src="app.js?v=8" defer></script>
+  </head>
+  <body>
+    <div class="paper-grid" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <button class="brand" data-view-link="train" aria-label="Keiko home">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span>
+          <strong>KEIKO</strong>
+          <small>VIM PRACTICE HALL</small>
+        </span>
+      </button>
+
+      <nav class="main-nav" aria-label="Main navigation">
+        <button class="nav-item active" data-view-link="train" aria-current="page">
+          <span class="nav-icon" aria-hidden="true">⌨</span> Train
+        </button>
+        <button class="nav-item" data-view-link="path">
+          <span class="nav-icon" aria-hidden="true">◇</span> Path
+        </button>
+        <button class="nav-item" data-view-link="handbook">
+          <span class="nav-icon" aria-hidden="true">⌘</span> Handbook
+        </button>
+      </nav>
+
+      <div class="header-stats" role="group" aria-label="Your progress">
+        <div class="stat-pill fire-pill" title="Practice streak">
+          <span aria-hidden="true">◆</span><strong id="streakCount">1</strong><small>day</small>
+        </div>
+        <div class="stat-pill xp-pill" title="Experience points">
+          <strong id="xpCount">0</strong><small>XP</small>
+        </div>
+        <button class="theme-cycle" id="themeCycle" type="button" aria-label="Appearance: System. Switch to Light.">
+          <span class="theme-cycle-icon" id="themeCycleIcon" aria-hidden="true">◐</span>
+          <span class="theme-cycle-label" id="themeCycleLabel">System</span>
+        </button>
+        <button class="avatar-button" id="openSettings" aria-label="Open preferences">
+          <span class="settings-icon" aria-hidden="true">⚙</span><span class="avatar-label">Preferences</span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="view active" id="trainView" aria-labelledby="trainTitle">
+        <h1 class="sr-only" id="trainTitle">Vim training</h1>
+        <div class="training-layout">
+          <aside class="session-rail">
+            <div class="rail-heading">
+              <p class="eyebrow">TODAY'S PRACTICE</p>
+              <span id="dailyProgressText">0 / 5</span>
+            </div>
+            <div class="daily-meter" id="dailyMeter" role="progressbar" aria-label="Daily goal progress" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0">
+              <span id="dailyMeterFill"></span>
+            </div>
+
+            <div class="chapter-card">
+              <span class="chapter-number" id="chapterNumber">01</span>
+              <div>
+                <small>CHAPTER</small>
+                <strong id="chapterName">The home row</strong>
+              </div>
+            </div>
+
+            <div class="kata-list" id="kataList" role="group" aria-label="Chapter lessons"></div>
+
+            <button class="review-button" id="reviewButton">
+              <span class="review-symbol" aria-hidden="true">↻</span>
+              <span><strong>Mixed review</strong><small id="reviewCount">Complete a kata first</small></span>
+            </button>
+
+            <div class="coach-note">
+              <span aria-hidden="true">✦</span>
+              <p><strong>Do less, remember more.</strong> Stop after your daily five. Come back tomorrow.</p>
+            </div>
+          </aside>
+
+          <section class="arena-column">
+            <div class="arena-heading">
+              <div>
+                <p class="eyebrow" id="missionLabel">KATA 1 OF 26</p>
+                <h2 id="missionTitle">Find your balance</h2>
+              </div>
+              <div class="arena-actions">
+                <button class="icon-button lesson-step" id="previousMission" title="Previous kata" aria-label="Previous kata">←</button>
+                <button class="icon-button" id="resetMission" title="Reset kata" aria-label="Reset kata">↺</button>
+                <button class="icon-button" id="toggleFocus" title="Focus mode" aria-label="Toggle focus mode" aria-pressed="false">⛶</button>
+                <button class="icon-button lesson-step" id="nextUnlockedMission" title="Next kata" aria-label="Next kata">→</button>
+              </div>
+            </div>
+
+            <div class="editor-shell" id="editorShell" tabindex="0" role="application" aria-label="Interactive Vim practice editor" aria-describedby="briefCopy feedbackText">
+              <div class="editor-topbar">
+                <div class="window-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+                <span class="filename" id="filename">balance.txt</span>
+                <span class="editor-hint">TYPE IN THE EDITOR</span>
+              </div>
+              <div class="editor-body">
+                <div class="line-numbers" id="lineNumbers" aria-hidden="true"></div>
+                <div class="code-lines" id="codeLines" aria-live="polite"></div>
+              </div>
+              <div class="vim-statusline">
+                <span class="mode-badge" id="modeBadge">NORMAL</span>
+                <span class="pending-command" id="pendingCommand">ready</span>
+                <span class="cursor-position" id="cursorPosition">1:1</span>
+              </div>
+            </div>
+
+            <div class="keystroke-deck">
+              <div class="deck-label">
+                <span class="pulse-dot"></span>
+                <span>KEY TRAIL</span>
+              </div>
+              <div class="key-trail" id="keyTrail"><span class="trail-empty">Your keys land here</span></div>
+              <div class="move-counter"><strong id="moveCount">0</strong><span>moves</span></div>
+            </div>
+
+            <div class="feedback-strip" id="feedbackStrip" aria-live="polite">
+              <span class="feedback-mark" id="feedbackMark">→</span>
+              <p id="feedbackText">Click the editor, then use Vim keys. Arrow keys are taking the day off.</p>
+            </div>
+          </section>
+
+          <aside class="brief-card">
+            <div class="brief-tab">CURRENT KATA</div>
+            <p class="brief-kicker" id="briefKicker">MOVE WITHOUT ARROWS</p>
+            <h3 id="briefTitle">Land on the spark.</h3>
+            <p class="brief-copy" id="briefCopy">Use the four keys under your right hand to reach the highlighted character.</p>
+
+            <div class="target-swatch">
+              <span class="target-mini" id="targetMini" aria-hidden="true">a</span>
+              <div><small>TARGET</small><strong id="targetText">the highlighted letter</strong></div>
+            </div>
+
+            <div class="key-lesson" id="keyLesson"></div>
+
+            <button class="hint-button" id="hintButton" aria-expanded="false" aria-controls="hintBox">
+              <span class="hint-icon" aria-hidden="true">?</span><span class="hint-button-label">Show a hint</span><kbd>?</kbd>
+            </button>
+            <div class="hint-box" id="hintBox" hidden></div>
+
+            <div class="efficiency-card">
+              <div><span>PAR</span><strong id="parMoves">4 moves</strong></div>
+              <div><span>YOUR BEST</span><strong id="bestMoves">—</strong></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" id="pathView" aria-labelledby="pathTitle">
+        <div class="page-intro">
+          <p class="eyebrow">YOUR CURRICULUM</p>
+          <h1 id="pathTitle">A path from arrows to instinct.</h1>
+          <p>Learn one small idea, use it immediately, then meet it again in mixed review.</p>
+          <button class="resume-button" id="resumeTraining">Resume your next kata <span aria-hidden="true">→</span></button>
+        </div>
+        <div class="path-summary">
+          <div class="path-rank"><span id="rankGlyph">初</span><div><small>CURRENT RANK</small><strong id="rankName">Beginner</strong></div></div>
+          <div class="summary-meter"><span id="pathMeterFill"></span></div>
+          <p><strong id="pathCompleted">0 of 26</strong> katas complete</p>
+        </div>
+        <div class="curriculum-grid" id="curriculumGrid"></div>
+      </section>
+
+      <section class="view" id="handbookView" aria-labelledby="handbookTitle">
+        <div class="page-intro handbook-intro">
+          <p class="eyebrow">POCKET REFERENCE</p>
+          <h1 id="handbookTitle">Vim is a language,<br />not a bag of shortcuts.</h1>
+          <p>Combine a count, an action, and a motion: <code>2dw</code> means “delete two words.”</p>
+        </div>
+        <label class="search-box">
+          <span aria-hidden="true">⌕</span>
+          <input id="commandSearch" type="search" placeholder="Search motions, edits, or keys…" autocomplete="off" />
+          <kbd>/</kbd>
+        </label>
+        <div class="handbook-tools">
+          <div class="command-filters" id="commandFilters" role="group" aria-label="Filter commands by category"></div>
+          <p class="result-count" id="commandResultCount" aria-live="polite"></p>
+        </div>
+        <div class="grammar-board" aria-label="Vim command grammar">
+          <div><small>OPTIONAL</small><strong>COUNT</strong><kbd>2</kbd></div>
+          <span>+</span>
+          <div><small>VERB</small><strong>OPERATOR</strong><kbd>d</kbd></div>
+          <span>+</span>
+          <div><small>NOUN</small><strong>MOTION</strong><kbd>w</kbd></div>
+          <span>=</span>
+          <div class="grammar-result"><small>COMMAND</small><strong>delete 2 words</strong><code>2dw</code></div>
+        </div>
+        <div class="command-grid" id="commandGrid"></div>
+      </section>
+    </main>
+
+    <div class="modal-backdrop" id="welcomeModal" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+      <div class="welcome-card">
+        <button class="modal-close" id="closeWelcome" aria-label="Skip introduction">×</button>
+        <div class="welcome-seal" aria-hidden="true"><span>形</span></div>
+        <p class="eyebrow">WELCOME TO KEIKO</p>
+        <h1 id="welcomeTitle">Your hands can learn<br />what your head forgets.</h1>
+        <p class="welcome-copy">Five focused minutes a day. No arrow keys, no command dumps—just tiny challenges that turn Vim into instinct.</p>
+        <div class="welcome-principles">
+          <div><span>01</span><strong>See one idea</strong><small>Plain-English instructions</small></div>
+          <div><span>02</span><strong>Use it now</strong><small>Real keystrokes, instant feedback</small></div>
+          <div><span>03</span><strong>Meet it again</strong><small>Mixed, spaced review</small></div>
+        </div>
+        <button class="primary-button" id="startTraining">Begin the first 60-second kata <span>→</span></button>
+        <small class="welcome-footnote">Use a physical keyboard. Progress stays in this browser.</small>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="successModal" role="dialog" aria-modal="true" aria-labelledby="successTitle" hidden>
+      <div class="success-card">
+        <div class="success-burst" aria-hidden="true">✦</div>
+        <p class="eyebrow">KATA COMPLETE</p>
+        <h2 id="successTitle">Clean movement.</h2>
+        <p id="successMessage">Your cursor landed exactly where it needed to.</p>
+        <div class="reward-row">
+          <div><span id="earnedXp">+20</span><small>XP EARNED</small></div>
+          <div><span id="efficiencyScore">100%</span><small>EFFICIENCY</small></div>
+          <div><span id="successMoves">4</span><small>MOVES</small></div>
+        </div>
+        <div class="mastery-note"><span aria-hidden="true">↻</span><p><strong>This will return.</strong> Mixed review brings old motions back before they fade.</p></div>
+        <button class="primary-button" id="nextMission">Next kata <span>→</span></button>
+        <button class="text-button" id="repeatMission">Repeat this kata</button>
+      </div>
+    </div>
+
+    <div class="settings-drawer" id="settingsDrawer" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
+      <div class="drawer-head"><div><p class="eyebrow">PREFERENCES</p><h2 id="settingsTitle">Your dojo</h2></div><button id="closeSettings" aria-label="Close preferences">×</button></div>
+      <fieldset class="appearance-setting" aria-describedby="themeHelp">
+        <legend><strong>Appearance</strong><small>Choose the light in your practice hall</small></legend>
+        <div class="theme-choice">
+          <label><input type="radio" name="theme" value="light" /><span><b aria-hidden="true">☼</b>Light</span></label>
+          <label><input type="radio" name="theme" value="system" /><span><b aria-hidden="true">◐</b>System</span></label>
+          <label><input type="radio" name="theme" value="dark" /><span><b aria-hidden="true">☾</b>Dark</span></label>
+        </div>
+        <p id="themeHelp">System follows this device and updates automatically.</p>
+      </fieldset>
+      <label class="setting-row"><span><strong>Sound cues</strong><small>Soft feedback on success</small></span><input id="soundToggle" type="checkbox" checked /></label>
+      <label class="setting-row"><span><strong>High contrast cursor</strong><small>Make the active character brighter</small></span><input id="contrastToggle" type="checkbox" /></label>
+      <div class="shortcut-card">
+        <p class="eyebrow">QUICK CONTROLS</p>
+        <div><span>Show or hide a hint</span><kbd>?</kbd></div>
+        <div><span>Leave Insert mode</span><kbd>Esc</kbd></div>
+        <div><span>Search the handbook</span><kbd>/</kbd></div>
+      </div>
+      <button class="danger-button" id="resetProgress">Reset all progress</button>
+    </div>
+    <div class="drawer-scrim" id="drawerScrim" hidden></div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
