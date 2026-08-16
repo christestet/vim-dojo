@@ -4,8 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Keiko is an interactive Vim dojo built for deliberate, keyboard-first practice." />
+    <meta name="theme-color" content="#f6f7ff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#101225" media="(prefers-color-scheme: dark)" />
+    <meta property="og:title" content="Keiko — a Vim muscle-memory dojo" />
+    <meta property="og:description" content="Build Vim muscle memory through short, focused keyboard katas." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://christestet.github.io/vim-dojo/" />
     <title>Keiko — a Vim muscle-memory dojo</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='28' fill='%234a45c6'/%3E%3Ctext x='50' y='70' text-anchor='middle' font-family='Georgia' font-size='65' font-weight='700' fill='white'%3EK%3C/text%3E%3C/svg%3E" />
+    <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="manifest.webmanifest" />
     <script>
       (() => {
         try {
@@ -17,8 +24,8 @@
         } catch { /* The app will restore the default theme after it loads. */ }
       })();
     </script>
-    <link rel="stylesheet" href="styles.css?v=11" />
-    <script src="app.js?v=9" defer></script>
+    <link rel="stylesheet" href="styles.css?v=14" />
+    <script src="app.js?v=10" defer></script>
   </head>
   <body>
     <div class="paper-grid" aria-hidden="true"></div>
@@ -34,13 +41,13 @@
 
       <nav class="main-nav" aria-label="Main navigation">
         <button class="nav-item active" data-view-link="train" aria-current="page" title="Training · g then t">
-          <span class="nav-icon" aria-hidden="true">⌨</span> Train
+          <span class="nav-icon" aria-hidden="true">⌨</span><span class="nav-label">Train</span><kbd class="nav-shortcut">g t</kbd>
         </button>
         <button class="nav-item" data-view-link="path" aria-haspopup="dialog" title="Practice path · g then p">
-          <span class="nav-icon" aria-hidden="true">◇</span> Path
+          <span class="nav-icon" aria-hidden="true">◇</span><span class="nav-label">Path</span><kbd class="nav-shortcut">g p</kbd>
         </button>
         <button class="nav-item" data-view-link="handbook" aria-haspopup="dialog" title="Handbook · g then b">
-          <span class="nav-icon" aria-hidden="true">⌘</span> Handbook
+          <span class="nav-icon" aria-hidden="true">⌘</span><span class="nav-label">Handbook</span><kbd class="nav-shortcut">g b</kbd>
         </button>
       </nav>
 
@@ -52,7 +59,7 @@
           <strong id="xpCount">0</strong><small>XP</small>
         </div>
         <button class="shortcut-button" id="openShortcuts" type="button" aria-label="Open keyboard commands" aria-keyshortcuts="g" title="Keyboard commands · g">
-          <span aria-hidden="true">⌨</span><kbd>g</kbd>
+          <span aria-hidden="true">⌨</span><span class="shortcut-button-label">Quick controls</span><kbd>g</kbd>
         </button>
         <button class="theme-cycle" id="themeCycle" type="button" aria-label="Appearance: System. Switch to Light.">
           <span class="theme-cycle-icon" id="themeCycleIcon" aria-hidden="true">◐</span>
@@ -67,6 +74,11 @@
     <main>
       <section class="view active" id="trainView" aria-labelledby="trainTitle">
         <h1 class="sr-only" id="trainTitle">Vim training</h1>
+        <div class="keyboard-notice" role="note">
+          <span class="keyboard-notice-mark" aria-hidden="true">⌨</span>
+          <p><strong>Keep a physical keyboard nearby.</strong> Training listens for real Vim keys; Path and Handbook remain touch-friendly.</p>
+          <button type="button" data-view-link="handbook">Open Handbook <span aria-hidden="true">→</span></button>
+        </div>
         <div class="training-layout">
           <aside class="session-rail">
             <div class="rail-heading">
@@ -141,6 +153,15 @@
             <div class="feedback-strip" id="feedbackStrip" aria-live="polite">
               <span class="feedback-mark" id="feedbackMark">→</span>
               <p id="feedbackText">Editor ready. Use Vim keys; press Tab when you want app controls.</p>
+            </div>
+
+            <div class="quick-ribbon" role="group" aria-label="Quick controls">
+              <span class="quick-ribbon-title"><span aria-hidden="true">:</span> quick controls</span>
+              <button type="button" data-quick-action="shortcuts"><kbd>g</kbd><span>All</span></button>
+              <button type="button" data-quick-action="hint"><kbd>g h</kbd><span>Hint</span></button>
+              <button type="button" data-quick-action="focus"><kbd>g f</kbd><span>Focus</span></button>
+              <button type="button" data-quick-action="path"><kbd>g p</kbd><span>Path</span></button>
+              <button type="button" data-quick-action="handbook"><kbd>g b</kbd><span>Handbook</span></button>
             </div>
           </section>
 
@@ -245,7 +266,7 @@
           <div><span>03</span><strong>Meet it again</strong><small>Mixed, spaced review</small></div>
         </div>
         <button class="primary-button" id="startTraining" autofocus>Begin the first 60-second kata <span>→</span></button>
-        <small class="welcome-footnote">Use a physical keyboard. Progress stays in this browser.</small>
+        <small class="welcome-footnote"><strong>Physical keyboard required.</strong> Progress stays here. Press <kbd>g</kbd> anytime for quick controls.</small>
       </div>
     </dialog>
 

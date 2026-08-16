@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Keiko K">
+  <rect width="512" height="512" rx="136" fill="#4a45c6"/>
+  <path d="M145 116h72v116l103-116h88L288 248l132 148h-92L239 294l-22 24v78h-72V116Z" fill="#fff"/>
+  <path d="M104 430h304" stroke="#ffd45b" stroke-width="28" stroke-linecap="round"/>
+</svg>

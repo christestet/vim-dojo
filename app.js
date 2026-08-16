@@ -245,7 +245,13 @@ function loadProgress() {
 }
 
 function saveProgress() { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); }
-function todayKey() { return new Date().toISOString().slice(0, 10); }
+function localDayKey(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+function todayKey() { return localDayKey(); }
 function cloneState() { return { lines: [...editor.lines], row: editor.row, col: editor.col, mode: editor.mode, lastSearch: editor.lastSearch, searchDirection: editor.searchDirection }; }
 function currentMission() { return missions[missionIndex]; }
 
@@ -286,6 +292,7 @@ function bindEvents() {
   $("resumeTraining").addEventListener("click", () => { showView("train"); loadMission(Math.min(progress.completed.length, missions.length - 1)); });
   $("openSettings").addEventListener("click", openSettings);
   $("openShortcuts").addEventListener("click", openShortcutPalette);
+  document.querySelectorAll("[data-quick-action]").forEach(button => button.addEventListener("click", () => runQuickAction(button.dataset.quickAction)));
   $("closeShortcuts").addEventListener("click", () => $("commandPalette").close());
   $("commandPalette").querySelectorAll("[data-shortcut-command]").forEach(button => button.addEventListener("click", () => runShortcutCommand(button.dataset.shortcutCommand)));
   document.querySelectorAll("[data-close-overlay]").forEach(button => button.addEventListener("click", () => button.closest("dialog").close()));
@@ -341,7 +348,7 @@ function restoreTrainingView() {
   if (!openOverlay) focusEditor();
 }
 
-function focusEditor() { requestAnimationFrame(() => $("editorShell").focus()); }
+function focusEditor() { requestAnimationFrame(() => $("editorShell").focus({ preventScroll: true })); }
 
 function loadMission(index, asReview = false, refocus = true) {
   missionIndex = index;
@@ -1062,7 +1069,7 @@ function calculateStreak() {
   let streak = 0;
   const day = new Date();
   for (let i = 0; i < 365; i++) {
-    const key = day.toISOString().slice(0, 10);
+    const key = localDayKey(day);
     if (progress.daily[key]) streak++;
     else if (i > 0 || progress.daily[todayKey()]) break;
     day.setDate(day.getDate() - 1);
@@ -1178,6 +1185,11 @@ function openShortcutPalette() {
   requestAnimationFrame(() => $("commandPalette").querySelector("[data-shortcut-command]").focus());
 }
 
+function runQuickAction(action) {
+  if (action === "shortcuts") openShortcutPalette();
+  else runShortcutCommand(action);
+}
+
 function runShortcutCommand(command) {
   if ($("commandPalette").open) $("commandPalette").close();
   if ($("settingsDrawer").open) closeSettings();
@@ -1214,3 +1226,7 @@ function showToast(message) {
 function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[char])); }
 
 init();
+
+if ("serviceWorker" in navigator && location.protocol !== "file:") {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}

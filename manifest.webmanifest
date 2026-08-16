@@ -1,0 +1,18 @@
+{
+  "name": "Keiko — Vim Practice Hall",
+  "short_name": "Keiko",
+  "description": "Build Vim muscle memory through short, focused keyboard katas.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f7ff",
+  "theme_color": "#4a45c6",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

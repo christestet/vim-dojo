@@ -26,7 +26,9 @@ Then visit `http://localhost:4173`.
 - Daily goal, XP, streak, efficiency, hints, and persistent browser-local progress
 - Searchable, category-filtered command handbook and command-grammar explainer
 - Focus mode, optional sound, high-contrast cursor, mobile layout, reduced-motion support
+- Contextual quick-control ribbons and keyboard hints throughout the training flow
 - Persistent Light, Dark, and System appearance modes with live OS-theme updates
+- Installable offline app support through a small service worker and web manifest
 
 ## Learning design
 
