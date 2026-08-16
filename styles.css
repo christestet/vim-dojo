@@ -240,7 +240,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible {
 .settings-icon { font-size: 20px; line-height: 1; }
 .avatar-label { font-size: 0.625rem; text-transform: uppercase; letter-spacing: .06em; }
 
-.view { min-height: calc(100vh - 76px); }
+.view { min-height: calc(100vh - 134px); }
 .view.active { animation: view-in .4s var(--ease-out) both; }
 @keyframes view-in { from { opacity: 0; transform: translateY(5px); } }
 
@@ -588,6 +588,13 @@ html:has(dialog[open]) { overflow: hidden; }
 .focus-mode .training-layout { min-height: 100vh; grid-template-columns: minmax(460px, 820px); align-items: center; }
 .focus-mode .arena-column { grid-column: 1; order: 1; }
 .focus-mode .arena-heading { margin-top: 0; }
+.focus-mode .site-footer { display: none; }
+.site-footer { min-height: 58px; display: flex; align-items: center; justify-content: center; gap: 11px; padding: 11px 24px 18px; color: var(--ink-soft); font: 700 0.6875rem var(--mono); }
+.footer-command { color: var(--indigo); }
+.site-footer a { display: inline-flex; align-items: center; gap: 7px; padding: 6px 9px; border-radius: 8px; color: var(--ink-soft); text-decoration: none; }
+.site-footer a:hover { color: var(--indigo); background: var(--surface-soft); }
+.site-footer a:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
+.site-footer svg { width: 15px; height: 15px; fill: currentColor; }
 .toast { position: fixed; z-index: 200; left: 50%; bottom: 25px; padding: 11px 17px; border-radius: 10px; color: var(--toast-ink); background: var(--toast-bg); font-size: 0.75rem; box-shadow: var(--shadow); opacity: 0; transform: translate(-50%, 10px); pointer-events: none; transition: .25s; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
@@ -611,6 +618,7 @@ html:has(dialog[open]) { overflow: hidden; }
   .header-stats { gap: 5px; }
   .stat-pill { padding: 0 8px; }
   .training-layout { display: flex; flex-direction: column; padding: 24px 16px 100px; }
+  .site-footer { padding-bottom: 96px; }
   .session-rail { display: none; }
   .brief-card { order: 1; margin: 0 0 22px; }
   .arena-column { order: 2; }
