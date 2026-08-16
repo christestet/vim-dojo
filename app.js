@@ -234,10 +234,10 @@ let errors = 0;
 let successLocked = false;
 let toastTimer;
 let activeCommandGroup = "All";
-let settingsReturnFocus = null;
 
 const $ = id => document.getElementById(id);
 const themeMedia = window.matchMedia("(prefers-color-scheme: dark)");
+const motionMedia = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 function loadProgress() {
   try { return { ...defaultProgress, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") }; }
@@ -257,10 +257,9 @@ function init() {
   renderCommandFilters();
   renderHandbook();
   updateProgressUI();
-  loadMission(missionIndex);
-  $("welcomeModal").hidden = progress.welcomed;
-  setBackgroundInert(!progress.welcomed);
-  if (!progress.welcomed) setTimeout(() => $("startTraining").focus(), 0);
+  loadMission(missionIndex, false, false);
+  if (progress.welcomed) focusEditor();
+  else $("welcomeModal").showModal();
   document.body.classList.toggle("high-contrast", progress.contrast);
   $("soundToggle").checked = progress.sound;
   $("contrastToggle").checked = progress.contrast;
@@ -270,9 +269,11 @@ function bindEvents() {
   document.querySelectorAll("[data-view-link]").forEach(button => button.addEventListener("click", () => showView(button.dataset.viewLink)));
   $("startTraining").addEventListener("click", closeWelcome);
   $("closeWelcome").addEventListener("click", closeWelcome);
-  $("resetMission").addEventListener("click", () => loadMission(missionIndex));
-  $("previousMission").addEventListener("click", () => loadMission(missionIndex - 1));
-  $("nextUnlockedMission").addEventListener("click", () => loadMission(missionIndex + 1));
+  $("welcomeModal").addEventListener("close", finishWelcome);
+  $("successModal").addEventListener("cancel", event => { event.preventDefault(); repeatMission(); });
+  $("resetMission").addEventListener("click", () => runTransition(() => loadMission(missionIndex)));
+  $("previousMission").addEventListener("click", () => runTransition(() => loadMission(missionIndex - 1)));
+  $("nextUnlockedMission").addEventListener("click", () => runTransition(() => loadMission(missionIndex + 1)));
   $("toggleFocus").addEventListener("click", toggleFocusMode);
   $("editorShell").addEventListener("click", () => $("editorShell").focus());
   $("editorShell").addEventListener("focus", () => $("editorShell").classList.add("is-focused"));
@@ -284,6 +285,11 @@ function bindEvents() {
   $("reviewButton").addEventListener("click", startReview);
   $("resumeTraining").addEventListener("click", () => { showView("train"); loadMission(Math.min(progress.completed.length, missions.length - 1)); });
   $("openSettings").addEventListener("click", openSettings);
+  $("openShortcuts").addEventListener("click", openShortcutPalette);
+  $("closeShortcuts").addEventListener("click", () => $("commandPalette").close());
+  $("commandPalette").querySelectorAll("[data-shortcut-command]").forEach(button => button.addEventListener("click", () => runShortcutCommand(button.dataset.shortcutCommand)));
+  document.querySelectorAll("[data-close-overlay]").forEach(button => button.addEventListener("click", () => button.closest("dialog").close()));
+  document.querySelectorAll(".overlay-view").forEach(dialog => dialog.addEventListener("close", restoreTrainingView));
   $("themeCycle").addEventListener("click", cycleTheme);
   document.querySelectorAll('input[name="theme"]').forEach(input => input.addEventListener("change", event => {
     if (event.target.checked) applyTheme(event.target.value, true, true);
@@ -292,7 +298,6 @@ function bindEvents() {
     if (progress.theme === "system") applyTheme("system");
   });
   $("closeSettings").addEventListener("click", closeSettings);
-  $("drawerScrim").addEventListener("click", closeSettings);
   $("soundToggle").addEventListener("change", e => { progress.sound = e.target.checked; saveProgress(); });
   $("contrastToggle").addEventListener("change", e => { progress.contrast = e.target.checked; document.body.classList.toggle("high-contrast", progress.contrast); saveProgress(); });
   $("resetProgress").addEventListener("click", resetAllProgress);
@@ -301,26 +306,44 @@ function bindEvents() {
 }
 
 function closeWelcome() {
+  $("welcomeModal").close();
+}
+
+function finishWelcome() {
   progress.welcomed = true;
   saveProgress();
-  $("welcomeModal").hidden = true;
-  setBackgroundInert(false);
-  setTimeout(() => $("editorShell").focus(), 80);
+  focusEditor();
 }
 
 function showView(view) {
-  document.querySelectorAll(".view").forEach(el => el.classList.toggle("active", el.id === `${view}View`));
+  const target = view === "train" ? null : $(`${view}View`);
+  document.querySelectorAll(".overlay-view[open]").forEach(dialog => {
+    if (dialog !== target) dialog.close();
+  });
+  updateNavigation(view);
+  if (!target) { focusEditor(); return; }
+  if (!target.open) target.showModal();
+  requestAnimationFrame(() => (view === "handbook" ? $("commandSearch") : $("resumeTraining")).focus());
+}
+
+function updateNavigation(view) {
   document.querySelectorAll(".nav-item").forEach(el => {
     const active = el.dataset.viewLink === view;
     el.classList.toggle("active", active);
     if (active) el.setAttribute("aria-current", "page");
     else el.removeAttribute("aria-current");
   });
-  if (view === "train") setTimeout(() => $("editorShell").focus(), 100);
-  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-function loadMission(index, asReview = false) {
+function restoreTrainingView() {
+  const openOverlay = document.querySelector(".overlay-view[open]");
+  updateNavigation(openOverlay ? openOverlay.id.replace("View", "") : "train");
+  if (!openOverlay) focusEditor();
+}
+
+function focusEditor() { requestAnimationFrame(() => $("editorShell").focus()); }
+
+function loadMission(index, asReview = false, refocus = true) {
   missionIndex = index;
   reviewMode = asReview;
   const mission = currentMission();
@@ -330,19 +353,20 @@ function loadMission(index, asReview = false) {
   moveCount = 0;
   errors = 0;
   successLocked = false;
-  $("successModal").hidden = true;
+  if ($("successModal").open) $("successModal").close();
   $("hintBox").hidden = true;
   $("hintButton").setAttribute("aria-expanded", "false");
   $("hintButton").querySelector(".hint-button-label").textContent = "Show a hint";
   $("feedbackStrip").className = "feedback-strip";
   $("feedbackMark").textContent = "→";
-  $("feedbackText").textContent = "Click the editor, then use Vim keys. Arrow keys are taking the day off.";
+  $("feedbackText").textContent = "Editor ready. Use Vim keys; press Tab when you want app controls.";
   $("previousMission").disabled = missionIndex === 0;
   $("nextUnlockedMission").disabled = missionIndex >= missions.length - 1 || missionIndex >= progress.completed.length;
   renderMissionMeta();
   renderEditor();
   renderKataList();
   updateProgressUI();
+  if (refocus) focusEditor();
 }
 
 function renderMissionMeta() {
@@ -393,16 +417,16 @@ function renderKeyTrail() {
 }
 
 function handleKeydown(event) {
-  if (!$("successModal").hidden || !$("welcomeModal").hidden) return;
+  if ($("successModal").open || $("welcomeModal").open) return;
+  if (event.key === "Tab" && !event.ctrlKey && !event.metaKey && !event.altKey && document.body.classList.contains("focus-mode")) { event.preventDefault(); $("toggleFocus").focus(); return; }
+  if (event.ctrlKey || event.metaKey || event.altKey || event.key === "Tab") return;
   if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
     event.preventDefault();
     errors++;
     feedback("error", "Arrow keys work—but they skip the skill you're here to build. Try h, j, k, or l.");
     return;
   }
-  if (event.ctrlKey || event.metaKey || event.altKey || event.key === "Tab") return;
   event.preventDefault();
-  if (event.key === "?" && editor.mode === "normal") { toggleHint(); return; }
   processKey(event.key);
 }
 
@@ -471,7 +495,7 @@ function processKey(rawKey) {
 
   if (!recognized) {
     errors++;
-    feedback("error", `“${key}” isn't part of this dojo yet. Check the mission card or press ? for a hint.`);
+    feedback("error", `“${key}” isn't part of this dojo yet. Press Tab, then g h for a hint.`);
   } else if (!["d", "c", "g", "[", "]", "f", "F", "x", "u", "/", "n", "N", "*", "%"].includes(key)) {
     feedback("neutral", motionFeedback(key, count));
   }
@@ -940,21 +964,19 @@ function showSuccess() {
   $("successTitle").textContent = errors ? "You corrected the course." : efficiency === 100 ? "Clean movement." : "Target reached.";
   $("successMessage").textContent = reviewMode ? "That older motion is stronger now." : mission.id === "xml-around" ? "You can now navigate code, patches, logs, and structured data with intent." : mission.id === "final" ? "Your first belt is earned. Keep the practice small and steady." : "Your hands just learned one more Vim sentence.";
   $("nextMission").innerHTML = missionIndex === missions.length - 1 ? "Open the practice path <span>→</span>" : "Next kata <span>→</span>";
-  $("successModal").hidden = false;
-  setBackgroundInert(true);
+  $("successModal").showModal();
   $("nextMission").focus();
   if (progress.sound) playSuccessTone();
 }
 
 function goNext() {
-  $("successModal").hidden = true;
-  setBackgroundInert(false);
+  $("successModal").close();
   if (reviewMode) { startReview(); return; }
-  if (missionIndex < missions.length - 1) loadMission(missionIndex + 1);
+  if (missionIndex < missions.length - 1) runTransition(() => loadMission(missionIndex + 1));
   else showView("path");
 }
 
-function repeatMission() { $("successModal").hidden = true; setBackgroundInert(false); loadMission(missionIndex, reviewMode); setTimeout(() => $("editorShell").focus(), 60); }
+function repeatMission() { $("successModal").close(); runTransition(() => loadMission(missionIndex, reviewMode)); }
 
 function startReview() {
   if (!progress.completed.length) return;
@@ -975,7 +997,7 @@ function renderKataList() {
     const unlocked = index <= progress.completed.length;
     return `<button class="kata-item ${index === missionIndex ? "active" : ""} ${complete ? "complete" : ""}" data-index="${index}" ${!unlocked ? "disabled" : ""}><span class="kata-dot">${complete ? "✓" : index + 1}</span><strong>${escapeHtml(m.title)}</strong><span class="kata-state">${!unlocked ? "⌁" : complete ? "+" : "→"}</span></button>`;
   }).join("");
-  $("kataList").querySelectorAll(".kata-item:not(:disabled)").forEach(button => button.addEventListener("click", () => loadMission(Number(button.dataset.index))));
+  $("kataList").querySelectorAll(".kata-item:not(:disabled)").forEach(button => button.addEventListener("click", () => runTransition(() => loadMission(Number(button.dataset.index)))));
 }
 
 function renderCurriculum() {
@@ -989,9 +1011,9 @@ function renderCurriculum() {
       const unlocked = index <= progress.completed.length;
       return `<button class="path-card ${complete ? "complete" : ""} ${index === missionIndex ? "current" : ""} ${!unlocked ? "locked" : ""}" data-index="${index}" data-glyph="${escapeHtml(m.glyph)}" ${!unlocked ? "disabled" : ""}><span class="path-card-index">KATA ${String(index + 1).padStart(2, "0")}</span><h3>${escapeHtml(m.title)}</h3><p>${escapeHtml(m.copy)}</p><span class="path-card-footer">${complete ? "✓ mastered" : unlocked ? "→ ready to train" : "⌁ locked"}</span></button>`;
     }).join("");
-    return `<section class="chapter-section"><header class="chapter-section-head"><span>${String(chapterNo).padStart(2, "0")}</span><div><p>CHAPTER ${String(chapterNo).padStart(2, "0")}</p><h2>${escapeHtml(chapter)}</h2></div><small>${mastered} / ${chapterMissions.length} mastered</small></header><div class="chapter-levels">${cards}</div></section>`;
+    return `<section class="chapter-section"><header class="chapter-section-head"><span aria-hidden="true">${String(chapterNo).padStart(2, "0")}</span><div><p>CHAPTER ${String(chapterNo).padStart(2, "0")}</p><h2>${escapeHtml(chapter)}</h2></div><small>${mastered} / ${chapterMissions.length} mastered</small></header><div class="chapter-levels">${cards}</div></section>`;
   }).join("");
-  $("curriculumGrid").querySelectorAll(".path-card:not(:disabled)").forEach(button => button.addEventListener("click", () => { loadMission(Number(button.dataset.index)); showView("train"); }));
+  $("curriculumGrid").querySelectorAll(".path-card:not(:disabled)").forEach(button => button.addEventListener("click", () => runTransition(() => { loadMission(Number(button.dataset.index)); showView("train"); })));
 }
 
 function renderCommandFilters() {
@@ -1001,6 +1023,7 @@ function renderCommandFilters() {
     activeCommandGroup = button.dataset.commandGroup;
     renderCommandFilters();
     renderHandbook($("commandSearch").value);
+    [...$("commandFilters").querySelectorAll("button")].find(filter => filter.dataset.commandGroup === activeCommandGroup)?.focus();
   }));
 }
 
@@ -1065,10 +1088,17 @@ function motionFeedback(key, count) {
 }
 
 function toggleFocusMode() {
-  const active = document.body.classList.toggle("focus-mode");
-  $("toggleFocus").setAttribute("aria-pressed", String(active));
-  $("toggleFocus").title = active ? "Exit focus mode" : "Focus mode";
-  $("toggleFocus").setAttribute("aria-label", active ? "Exit focus mode" : "Toggle focus mode");
+  runTransition(() => {
+    const active = document.body.classList.toggle("focus-mode");
+    $("toggleFocus").setAttribute("aria-pressed", String(active));
+    $("toggleFocus").title = active ? "Exit focus mode · g then f" : "Focus mode · g then f";
+    $("toggleFocus").setAttribute("aria-label", active ? "Exit focus mode" : "Toggle focus mode");
+  });
+}
+
+function runTransition(update) {
+  if (document.startViewTransition && !document.activeViewTransition && !motionMedia.matches) return document.startViewTransition(update);
+  return update();
 }
 
 function resolvedTheme(theme) {
@@ -1105,17 +1135,11 @@ function cycleTheme() {
 }
 
 function openSettings() {
-  settingsReturnFocus = document.activeElement;
-  $("settingsDrawer").hidden = false;
-  $("drawerScrim").hidden = false;
-  setBackgroundInert(true);
+  if (!$("settingsDrawer").open) $("settingsDrawer").showModal();
   $("closeSettings").focus();
 }
 function closeSettings() {
-  $("settingsDrawer").hidden = true;
-  $("drawerScrim").hidden = true;
-  setBackgroundInert(false);
-  settingsReturnFocus?.focus();
+  if ($("settingsDrawer").open) $("settingsDrawer").close();
 }
 function resetAllProgress() {
   if (!window.confirm("Reset every completed kata, score, and streak?")) return;
@@ -1134,10 +1158,35 @@ function resetAllProgress() {
 }
 
 function globalShortcuts(event) {
-  const activeTag = document.activeElement?.tagName;
-  if (event.key === "/" && activeTag !== "INPUT" && $("handbookView").classList.contains("active")) { event.preventDefault(); $("commandSearch").focus(); }
-  if (event.key === "Escape" && !$("settingsDrawer").hidden) closeSettings();
-  if (event.key === "Escape" && !$("successModal").hidden) repeatMission();
+  if (event.defaultPrevented || event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
+  const key = event.key.toLowerCase();
+  const palette = $("commandPalette");
+  if (palette.open) {
+    const command = { t: "train", p: "path", b: "handbook", h: "hint", f: "focus", s: "settings" }[key];
+    if (command) { event.preventDefault(); runShortcutCommand(command); }
+    return;
+  }
+  const target = event.target instanceof Element ? event.target : null;
+  if (target?.closest("#editorShell, input, textarea, select, [contenteditable]")) return;
+  if (key === "g") { event.preventDefault(); openShortcutPalette(); }
+  else if (event.key === "/" && $("handbookView").open) { event.preventDefault(); $("commandSearch").focus(); }
+}
+
+function openShortcutPalette() {
+  if ($("welcomeModal").open || $("successModal").open || $("commandPalette").open) return;
+  $("commandPalette").showModal();
+  requestAnimationFrame(() => $("commandPalette").querySelector("[data-shortcut-command]").focus());
+}
+
+function runShortcutCommand(command) {
+  if ($("commandPalette").open) $("commandPalette").close();
+  if ($("settingsDrawer").open) closeSettings();
+  if (command === "train") showView("train");
+  else if (command === "path") showView("path");
+  else if (command === "handbook") showView("handbook");
+  else if (command === "hint") { showView("train"); toggleHint(); }
+  else if (command === "focus") { showView("train"); toggleFocusMode(); }
+  else if (command === "settings") { showView("train"); openSettings(); }
 }
 
 function playSuccessTone() {
@@ -1160,11 +1209,6 @@ function playSuccessTone() {
 function showToast(message) {
   clearTimeout(toastTimer); $("toast").textContent = message; $("toast").classList.add("show");
   toastTimer = setTimeout(() => $("toast").classList.remove("show"), 2300);
-}
-
-function setBackgroundInert(inert) {
-  document.querySelector(".topbar").inert = inert;
-  document.querySelector("main").inert = inert;
 }
 
 function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[char])); }

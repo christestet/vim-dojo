@@ -17,8 +17,8 @@
         } catch { /* The app will restore the default theme after it loads. */ }
       })();
     </script>
-    <link rel="stylesheet" href="styles.css?v=9" />
-    <script src="app.js?v=8" defer></script>
+    <link rel="stylesheet" href="styles.css?v=10" />
+    <script src="app.js?v=9" defer></script>
   </head>
   <body>
     <div class="paper-grid" aria-hidden="true"></div>
@@ -33,13 +33,13 @@
       </button>
 
       <nav class="main-nav" aria-label="Main navigation">
-        <button class="nav-item active" data-view-link="train" aria-current="page">
+        <button class="nav-item active" data-view-link="train" aria-current="page" title="Training · g then t">
           <span class="nav-icon" aria-hidden="true">⌨</span> Train
         </button>
-        <button class="nav-item" data-view-link="path">
+        <button class="nav-item" data-view-link="path" aria-haspopup="dialog" title="Practice path · g then p">
           <span class="nav-icon" aria-hidden="true">◇</span> Path
         </button>
-        <button class="nav-item" data-view-link="handbook">
+        <button class="nav-item" data-view-link="handbook" aria-haspopup="dialog" title="Handbook · g then b">
           <span class="nav-icon" aria-hidden="true">⌘</span> Handbook
         </button>
       </nav>
@@ -51,11 +51,14 @@
         <div class="stat-pill xp-pill" title="Experience points">
           <strong id="xpCount">0</strong><small>XP</small>
         </div>
+        <button class="shortcut-button" id="openShortcuts" type="button" aria-label="Open keyboard commands" aria-keyshortcuts="g" title="Keyboard commands · g">
+          <span aria-hidden="true">⌨</span><kbd>g</kbd>
+        </button>
         <button class="theme-cycle" id="themeCycle" type="button" aria-label="Appearance: System. Switch to Light.">
           <span class="theme-cycle-icon" id="themeCycleIcon" aria-hidden="true">◐</span>
           <span class="theme-cycle-label" id="themeCycleLabel">System</span>
         </button>
-        <button class="avatar-button" id="openSettings" aria-label="Open preferences">
+        <button class="avatar-button" id="openSettings" aria-label="Open preferences" title="Preferences · g then s">
           <span class="settings-icon" aria-hidden="true">⚙</span><span class="avatar-label">Preferences</span>
         </button>
       </div>
@@ -104,7 +107,7 @@
               <div class="arena-actions">
                 <button class="icon-button lesson-step" id="previousMission" title="Previous kata" aria-label="Previous kata">←</button>
                 <button class="icon-button" id="resetMission" title="Reset kata" aria-label="Reset kata">↺</button>
-                <button class="icon-button" id="toggleFocus" title="Focus mode" aria-label="Toggle focus mode" aria-pressed="false">⛶</button>
+                <button class="icon-button" id="toggleFocus" title="Focus mode · g then f" aria-label="Toggle focus mode" aria-pressed="false">⛶</button>
                 <button class="icon-button lesson-step" id="nextUnlockedMission" title="Next kata" aria-label="Next kata">→</button>
               </div>
             </div>
@@ -113,11 +116,11 @@
               <div class="editor-topbar">
                 <div class="window-dots" aria-hidden="true"><span></span><span></span><span></span></div>
                 <span class="filename" id="filename">balance.txt</span>
-                <span class="editor-hint">TYPE IN THE EDITOR</span>
+                <span class="editor-hint">VIM KEYS · TAB FOR APP CONTROLS</span>
               </div>
               <div class="editor-body">
                 <div class="line-numbers" id="lineNumbers" aria-hidden="true"></div>
-                <div class="code-lines" id="codeLines" aria-live="polite"></div>
+                <div class="code-lines" id="codeLines"></div>
               </div>
               <div class="vim-statusline">
                 <span class="mode-badge" id="modeBadge">NORMAL</span>
@@ -137,7 +140,7 @@
 
             <div class="feedback-strip" id="feedbackStrip" aria-live="polite">
               <span class="feedback-mark" id="feedbackMark">→</span>
-              <p id="feedbackText">Click the editor, then use Vim keys. Arrow keys are taking the day off.</p>
+              <p id="feedbackText">Editor ready. Use Vim keys; press Tab when you want app controls.</p>
             </div>
           </section>
 
@@ -154,8 +157,8 @@
 
             <div class="key-lesson" id="keyLesson"></div>
 
-            <button class="hint-button" id="hintButton" aria-expanded="false" aria-controls="hintBox">
-              <span class="hint-icon" aria-hidden="true">?</span><span class="hint-button-label">Show a hint</span><kbd>?</kbd>
+            <button class="hint-button" id="hintButton" aria-expanded="false" aria-controls="hintBox" title="Hint · g then h">
+              <span class="hint-icon" aria-hidden="true">?</span><span class="hint-button-label">Show a hint</span><kbd>g h</kbd>
             </button>
             <div class="hint-box" id="hintBox" hidden></div>
 
@@ -167,7 +170,11 @@
         </div>
       </section>
 
-      <section class="view" id="pathView" aria-labelledby="pathTitle">
+      <dialog class="overlay-view" id="pathView" aria-labelledby="pathTitle" closedby="any">
+        <header class="overlay-bar">
+          <p><span aria-hidden="true">◇</span> Practice path <kbd>Esc</kbd></p>
+          <button type="button" data-close-overlay aria-label="Close practice path">×</button>
+        </header>
         <div class="page-intro">
           <p class="eyebrow">YOUR CURRICULUM</p>
           <h1 id="pathTitle">A path from arrows to instinct.</h1>
@@ -180,9 +187,13 @@
           <p><strong id="pathCompleted">0 of 26</strong> katas complete</p>
         </div>
         <div class="curriculum-grid" id="curriculumGrid"></div>
-      </section>
+      </dialog>
 
-      <section class="view" id="handbookView" aria-labelledby="handbookTitle">
+      <dialog class="overlay-view" id="handbookView" aria-labelledby="handbookTitle" closedby="any">
+        <header class="overlay-bar">
+          <p><span aria-hidden="true">⌘</span> Vim handbook <kbd>Esc</kbd></p>
+          <button type="button" data-close-overlay aria-label="Close handbook">×</button>
+        </header>
         <div class="page-intro handbook-intro">
           <p class="eyebrow">POCKET REFERENCE</p>
           <h1 id="handbookTitle">Vim is a language,<br />not a bag of shortcuts.</h1>
@@ -197,7 +208,7 @@
           <div class="command-filters" id="commandFilters" role="group" aria-label="Filter commands by category"></div>
           <p class="result-count" id="commandResultCount" aria-live="polite"></p>
         </div>
-        <div class="grammar-board" aria-label="Vim command grammar">
+        <div class="grammar-board" role="group" aria-label="Vim command grammar">
           <div><small>OPTIONAL</small><strong>COUNT</strong><kbd>2</kbd></div>
           <span>+</span>
           <div><small>VERB</small><strong>OPERATOR</strong><kbd>d</kbd></div>
@@ -207,10 +218,10 @@
           <div class="grammar-result"><small>COMMAND</small><strong>delete 2 words</strong><code>2dw</code></div>
         </div>
         <div class="command-grid" id="commandGrid"></div>
-      </section>
+      </dialog>
     </main>
 
-    <div class="modal-backdrop" id="welcomeModal" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+    <dialog class="modal-dialog" id="welcomeModal" aria-labelledby="welcomeTitle" closedby="any">
       <div class="welcome-card">
         <button class="modal-close" id="closeWelcome" aria-label="Skip introduction">×</button>
         <div class="welcome-seal" aria-hidden="true"><span>形</span></div>
@@ -222,12 +233,12 @@
           <div><span>02</span><strong>Use it now</strong><small>Real keystrokes, instant feedback</small></div>
           <div><span>03</span><strong>Meet it again</strong><small>Mixed, spaced review</small></div>
         </div>
-        <button class="primary-button" id="startTraining">Begin the first 60-second kata <span>→</span></button>
+        <button class="primary-button" id="startTraining" autofocus>Begin the first 60-second kata <span>→</span></button>
         <small class="welcome-footnote">Use a physical keyboard. Progress stays in this browser.</small>
       </div>
-    </div>
+    </dialog>
 
-    <div class="modal-backdrop" id="successModal" role="dialog" aria-modal="true" aria-labelledby="successTitle" hidden>
+    <dialog class="modal-dialog" id="successModal" aria-labelledby="successTitle">
       <div class="success-card">
         <div class="success-burst" aria-hidden="true">✦</div>
         <p class="eyebrow">KATA COMPLETE</p>
@@ -242,9 +253,9 @@
         <button class="primary-button" id="nextMission">Next kata <span>→</span></button>
         <button class="text-button" id="repeatMission">Repeat this kata</button>
       </div>
-    </div>
+    </dialog>
 
-    <div class="settings-drawer" id="settingsDrawer" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
+    <dialog class="settings-drawer" id="settingsDrawer" aria-labelledby="settingsTitle" closedby="any">
       <div class="drawer-head"><div><p class="eyebrow">PREFERENCES</p><h2 id="settingsTitle">Your dojo</h2></div><button id="closeSettings" aria-label="Close preferences">×</button></div>
       <fieldset class="appearance-setting" aria-describedby="themeHelp">
         <legend><strong>Appearance</strong><small>Choose the light in your practice hall</small></legend>
@@ -259,13 +270,33 @@
       <label class="setting-row"><span><strong>High contrast cursor</strong><small>Make the active character brighter</small></span><input id="contrastToggle" type="checkbox" /></label>
       <div class="shortcut-card">
         <p class="eyebrow">QUICK CONTROLS</p>
-        <div><span>Show or hide a hint</span><kbd>?</kbd></div>
+        <div><span>Open keyboard commands</span><kbd>g</kbd></div>
+        <div><span>Show or hide a hint</span><kbd>g h</kbd></div>
+        <div><span>Open the practice path</span><kbd>g p</kbd></div>
+        <div><span>Open the handbook</span><kbd>g b</kbd></div>
+        <div><span>Toggle focus mode</span><kbd>g f</kbd></div>
         <div><span>Leave Insert mode</span><kbd>Esc</kbd></div>
         <div><span>Search the handbook</span><kbd>/</kbd></div>
       </div>
       <button class="danger-button" id="resetProgress">Reset all progress</button>
-    </div>
-    <div class="drawer-scrim" id="drawerScrim" hidden></div>
+    </dialog>
+
+    <dialog class="command-palette" id="commandPalette" aria-labelledby="commandPaletteTitle" aria-describedby="commandPaletteHelp">
+      <div class="command-palette-head">
+        <div><p class="eyebrow">KEYBOARD FIRST</p><h2 id="commandPaletteTitle">Where next?</h2></div>
+        <button type="button" id="closeShortcuts" aria-label="Close keyboard commands">×</button>
+      </div>
+      <p id="commandPaletteHelp">Press one key. App commands pause while your cursor is inside the Vim editor or a text field.</p>
+      <div class="command-palette-grid">
+        <button type="button" data-shortcut-command="train"><kbd>t</kbd><span><strong>Train</strong><small>Return focus to Vim</small></span></button>
+        <button type="button" data-shortcut-command="path"><kbd>p</kbd><span><strong>Path</strong><small>Browse your curriculum</small></span></button>
+        <button type="button" data-shortcut-command="handbook"><kbd>b</kbd><span><strong>Handbook</strong><small>Search Vim commands</small></span></button>
+        <button type="button" data-shortcut-command="hint"><kbd>h</kbd><span><strong>Hint</strong><small>Reveal the current clue</small></span></button>
+        <button type="button" data-shortcut-command="focus"><kbd>f</kbd><span><strong>Focus mode</strong><small>Expand the terminal</small></span></button>
+        <button type="button" data-shortcut-command="settings"><kbd>s</kbd><span><strong>Preferences</strong><small>Theme, sound, contrast</small></span></button>
+      </div>
+      <p class="command-palette-foot"><kbd>Tab</kbd> moves through controls · <kbd>Esc</kbd> returns</p>
+    </dialog>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
   </body>
