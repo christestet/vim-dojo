@@ -1,6 +1,6 @@
-# Keiko — Vim Practice Hall
+# Keiko — Vim and XPath Dojo
 
-Keiko is a dependency-free, interactive Vim dojo for beginners. It teaches motion and editing through 26 short keyboard katas, immediate feedback, efficiency scoring, and mixed review.
+Keiko is a dependency-free, interactive practice dojo. It teaches Vim motion and editing through 26 keyboard katas, and XPath selection through a second, visual 12-lesson path inspired by CSS Diner.
 
 Try it at [christestet.github.io/vim-dojo](https://christestet.github.io/vim-dojo/).
 
@@ -17,6 +17,9 @@ Then visit `http://localhost:4173`.
 ## What is included
 
 - A small Vim simulator with Normal and Insert modes
+- A complete XPath 1.0 path with live DOM specimens and exact node-set validation
+- XPath predicates, attributes, `contains()`, `normalize-space()`, positions, `last()`, sibling axes, `not()`, `count()`, and composed text functions
+- Equivalent XPath expressions are accepted when they select exactly the requested nodes
 - `h j k l`, word motions, line/file jumps, character finding, counts, and undo
 - Operator + motion commands including `dw`, `dd`, `ciw`, and `d$`
 - 26 progressive katas and a mixed-review queue

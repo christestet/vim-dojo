@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Keiko is an interactive Vim dojo built for deliberate, keyboard-first practice." />
+    <meta name="description" content="Keiko is an interactive dojo for deliberate Vim and XPath practice." />
     <meta name="theme-color" content="#f6f7ff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#101225" media="(prefers-color-scheme: dark)" />
-    <meta property="og:title" content="Keiko — a Vim muscle-memory dojo" />
-    <meta property="og:description" content="Build Vim muscle memory through short, focused keyboard katas." />
+    <meta property="og:title" content="Keiko — Vim and XPath practice dojo" />
+    <meta property="og:description" content="Build Vim muscle memory and learn powerful XPath selection through focused katas." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://christestet.github.io/vim-dojo/" />
-    <title>Keiko — a Vim muscle-memory dojo</title>
+    <title>Keiko — Vim and XPath practice dojo</title>
     <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
     <link rel="manifest" href="manifest.webmanifest" />
     <script>
@@ -24,8 +24,8 @@
         } catch { /* The app will restore the default theme after it loads. */ }
       })();
     </script>
-    <link rel="stylesheet" href="styles.css?v=14" />
-    <script src="app.js?v=10" defer></script>
+    <link rel="stylesheet" href="styles.css?v=21" />
+    <script src="app.js?v=17" defer></script>
   </head>
   <body>
     <div class="paper-grid" aria-hidden="true"></div>
@@ -35,19 +35,22 @@
         <span class="brand-mark" aria-hidden="true">K</span>
         <span>
           <strong>KEIKO</strong>
-          <small>VIM PRACTICE HALL</small>
+          <small>VIM + XPATH DOJO</small>
         </span>
       </button>
 
       <nav class="main-nav" aria-label="Main navigation">
         <button class="nav-item active" data-view-link="train" aria-current="page" title="Training · g then t">
-          <span class="nav-icon" aria-hidden="true">⌨</span><span class="nav-label">Train</span><kbd class="nav-shortcut">g t</kbd>
+          <span class="nav-icon" aria-hidden="true">⌨</span><span class="nav-label">Vim</span><kbd class="nav-shortcut">g t</kbd>
         </button>
-        <button class="nav-item" data-view-link="path" aria-haspopup="dialog" title="Practice path · g then p">
-          <span class="nav-icon" aria-hidden="true">◇</span><span class="nav-label">Path</span><kbd class="nav-shortcut">g p</kbd>
+        <button class="nav-item" data-view-link="xpath" title="XPath dojo · g then x">
+          <span class="nav-icon" aria-hidden="true">//</span><span class="nav-label">XPath</span><kbd class="nav-shortcut">g x</kbd>
         </button>
-        <button class="nav-item" data-view-link="handbook" aria-haspopup="dialog" title="Handbook · g then b">
-          <span class="nav-icon" aria-hidden="true">⌘</span><span class="nav-label">Handbook</span><kbd class="nav-shortcut">g b</kbd>
+        <button class="nav-item" data-view-link="path" aria-haspopup="dialog" title="Vim path · g then p">
+          <span class="nav-icon" aria-hidden="true">◇</span><span class="nav-label">Vim path</span><kbd class="nav-shortcut">g p</kbd>
+        </button>
+        <button class="nav-item" data-view-link="handbook" aria-haspopup="dialog" title="Vim handbook · g then b">
+          <span class="nav-icon" aria-hidden="true">⌘</span><span class="nav-label">Vim handbook</span><kbd class="nav-shortcut">g b</kbd>
         </button>
       </nav>
 
@@ -76,8 +79,8 @@
         <h1 class="sr-only" id="trainTitle">Vim training</h1>
         <div class="keyboard-notice" role="note">
           <span class="keyboard-notice-mark" aria-hidden="true">⌨</span>
-          <p><strong>Keep a physical keyboard nearby.</strong> Training listens for real Vim keys; Path and Handbook remain touch-friendly.</p>
-          <button type="button" data-view-link="handbook">Open Handbook <span aria-hidden="true">→</span></button>
+          <p><strong>Keep a physical keyboard nearby.</strong> Vim training listens for real keys; the Vim path and handbook remain touch-friendly.</p>
+          <button type="button" data-view-link="handbook">Open Vim handbook <span aria-hidden="true">→</span></button>
         </div>
         <div class="training-layout">
           <aside class="session-rail">
@@ -191,10 +194,97 @@
         </div>
       </section>
 
+      <section class="view xpath-view" id="xpathView" aria-labelledby="xpathTitle" hidden>
+        <div class="xpath-shell">
+          <header class="xpath-hero">
+            <div>
+              <p class="xpath-overline"><span>NEW PATH</span> · XPATH 1.0 IN THE BROWSER</p>
+              <h1 id="xpathTitle">Read the tree.<br /><em>Select with intent.</em></h1>
+              <p>Write an XPath expression and watch the matching nodes answer in the specimen. Start with elements; finish with axes, predicates, and text functions.</p>
+            </div>
+            <div class="xpath-progress-card" role="group" aria-label="XPath path progress">
+              <div class="xpath-orbit" aria-hidden="true"><span id="xpathProgressGlyph">//</span></div>
+              <div>
+                <small>PATH MASTERY</small><strong id="xpathProgressText">0 / 12</strong><span class="xpath-meter"><i id="xpathMeterFill"></i></span>
+                <p class="xpath-daily"><span>TODAY</span><b id="xpathDailyText">0 / 5 lessons</b></p>
+              </div>
+            </div>
+          </header>
+
+          <div class="xpath-workbench">
+            <aside class="xpath-map" aria-label="XPath lesson path">
+              <div class="xpath-map-head">
+                <p class="eyebrow">THE DOM TRAIL</p>
+                <span id="xpathChapterLabel">01 · ROOTS</span>
+              </div>
+              <div class="xpath-lesson-list" id="xpathLessonList"></div>
+              <div class="xpath-reference">
+                <span aria-hidden="true">ƒ</span>
+                <p><strong>Browser-native XPath 1.0</strong><small>Functions here work in DevTools, automation, and document.evaluate().</small></p>
+              </div>
+            </aside>
+
+            <section class="xpath-arena" aria-labelledby="xpathMissionTitle">
+              <div class="xpath-mission-head">
+                <div>
+                  <p class="eyebrow" id="xpathMissionLabel">LESSON 01 OF 12</p>
+                  <h2 id="xpathMissionTitle">Call every card</h2>
+                </div>
+                <div class="xpath-step-actions">
+                  <button type="button" id="xpathPrevious" aria-label="Previous XPath lesson">←</button>
+                  <button type="button" id="xpathReset" aria-label="Reset XPath lesson">↺</button>
+                  <button type="button" id="xpathNext" aria-label="Next XPath lesson">→</button>
+                </div>
+              </div>
+
+              <div class="xpath-brief">
+                <span class="xpath-brief-no" id="xpathBriefNo">01</span>
+                <div><small id="xpathConcept">DESCENDANTS</small><h3 id="xpathPrompt">Select every recipe card.</h3><p id="xpathExplanation">Double slash searches through every descendant in the document.</p></div>
+                <code id="xpathSyntax">//element</code>
+              </div>
+
+              <form class="xpath-console" id="xpathForm">
+                <label for="xpathInput"><span>YOUR XPATH</span><kbd>Enter</kbd></label>
+                <div class="xpath-input-row">
+                  <span aria-hidden="true">›</span>
+                  <input id="xpathInput" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Write an XPath expression…" aria-describedby="xpathFeedback" />
+                  <button type="submit">Run selection <span aria-hidden="true">↵</span></button>
+                </div>
+                <p class="xpath-feedback" id="xpathFeedback" aria-live="polite">Your matches will light up in the specimen.</p>
+              </form>
+
+              <div class="xpath-specimen-shell">
+                <div class="xpath-specimen-bar">
+                  <span><i></i><i></i><i></i></span>
+                  <strong>LIVE DOM SPECIMEN</strong>
+                  <small id="xpathMatchCount">0 nodes selected</small>
+                </div>
+                <div class="xpath-specimen" id="xpathSpecimen" role="group" aria-label="Interactive DOM specimen"></div>
+                <div class="xpath-scanline" aria-hidden="true"></div>
+              </div>
+
+            </section>
+
+            <aside class="xpath-source-card">
+              <div class="xpath-source-head"><p class="eyebrow">SOURCE TREE</p><span>HTML</span></div>
+              <pre id="xpathSource" role="region" aria-label="Specimen HTML source" tabindex="0"></pre>
+              <details class="xpath-hint-disclosure" id="xpathHintDetails">
+                <summary class="xpath-hint-button" id="xpathHint"><span>?</span><b>Show a hint</b></summary>
+                <div class="xpath-hint" id="xpathHintText"></div>
+              </details>
+              <div class="xpath-functions">
+                <small>POWER TOOLS AHEAD</small>
+                <div><code>normalize-space()</code><code>contains()</code><code>last()</code><code>following-sibling::</code></div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
       <dialog class="overlay-view" id="pathView" aria-labelledby="pathTitle" closedby="any">
         <header class="overlay-bar">
-          <p><span aria-hidden="true">◇</span> Practice path <kbd>Esc</kbd></p>
-          <button type="button" data-close-overlay aria-label="Close practice path">×</button>
+          <p><span aria-hidden="true">◇</span> Vim practice path <kbd>Esc</kbd></p>
+          <button type="button" commandfor="pathView" command="close" aria-label="Close Vim practice path">×</button>
         </header>
         <div class="page-intro">
           <p class="eyebrow">YOUR CURRICULUM</p>
@@ -213,7 +303,7 @@
       <dialog class="overlay-view" id="handbookView" aria-labelledby="handbookTitle" closedby="any">
         <header class="overlay-bar">
           <p><span aria-hidden="true">⌘</span> Vim handbook <kbd>Esc</kbd></p>
-          <button type="button" data-close-overlay aria-label="Close handbook">×</button>
+          <button type="button" commandfor="handbookView" command="close" aria-label="Close handbook">×</button>
         </header>
         <div class="page-intro handbook-intro">
           <p class="eyebrow">POCKET REFERENCE</p>
@@ -258,15 +348,18 @@
         <button class="modal-close" id="closeWelcome" aria-label="Skip introduction">×</button>
         <div class="welcome-seal" aria-hidden="true"><span>形</span></div>
         <p class="eyebrow">WELCOME TO KEIKO</p>
-        <h1 id="welcomeTitle">Your hands can learn<br />what your head forgets.</h1>
-        <p class="welcome-copy">Five focused minutes a day. No arrow keys, no command dumps—just tiny challenges that turn Vim into instinct.</p>
+        <h1 id="welcomeTitle">Choose what your hands<br />learn next.</h1>
+        <p class="welcome-copy">Practice Vim until movement feels instinctive, or learn XPath by selecting real nodes in a live DOM specimen.</p>
         <div class="welcome-principles">
-          <div><span>01</span><strong>See one idea</strong><small>Plain-English instructions</small></div>
-          <div><span>02</span><strong>Use it now</strong><small>Real keystrokes, instant feedback</small></div>
-          <div><span>03</span><strong>Meet it again</strong><small>Mixed, spaced review</small></div>
+          <div><span>01</span><strong>Choose a path</strong><small>Vim movement or XPath selection</small></div>
+          <div><span>02</span><strong>Use it now</strong><small>Real keys or a live DOM</small></div>
+          <div><span>03</span><strong>Build mastery</strong><small>Short, progressive challenges</small></div>
         </div>
-        <button class="primary-button" id="startTraining" autofocus>Begin the first 60-second kata <span>→</span></button>
-        <small class="welcome-footnote"><strong>Physical keyboard required.</strong> Progress stays here. Press <kbd>g</kbd> anytime for quick controls.</small>
+        <div class="welcome-actions">
+          <button class="primary-button" id="startTraining" autofocus><span aria-hidden="true">⌨</span> Start with Vim <span>→</span></button>
+          <button class="welcome-path-button" id="startXPath"><span aria-hidden="true">//</span> Start with XPath <span>→</span></button>
+        </div>
+        <small class="welcome-footnote"><strong>Vim needs a physical keyboard; XPath is touch-friendly.</strong> Progress stays on this device. Press <kbd>g</kbd> for quick controls.</small>
       </div>
     </dialog>
 
@@ -304,11 +397,12 @@
         <p class="eyebrow">QUICK CONTROLS</p>
         <div><span>Open keyboard commands</span><kbd>g</kbd></div>
         <div><span>Show or hide a hint</span><kbd>g h</kbd></div>
-        <div><span>Open the practice path</span><kbd>g p</kbd></div>
-        <div><span>Open the handbook</span><kbd>g b</kbd></div>
+        <div><span>Open the Vim path</span><kbd>g p</kbd></div>
+        <div><span>Open the XPath dojo</span><kbd>g x</kbd></div>
+        <div><span>Open the Vim handbook</span><kbd>g b</kbd></div>
         <div><span>Toggle focus mode</span><kbd>g f</kbd></div>
         <div><span>Leave Insert mode</span><kbd>Esc</kbd></div>
-        <div><span>Search the handbook</span><kbd>/</kbd></div>
+        <div><span>Search the Vim handbook</span><kbd>/</kbd></div>
       </div>
       <button class="danger-button" id="resetProgress">Reset all progress</button>
     </dialog>
@@ -316,13 +410,14 @@
     <dialog class="command-palette" id="commandPalette" aria-labelledby="commandPaletteTitle" aria-describedby="commandPaletteHelp">
       <div class="command-palette-head">
         <div><p class="eyebrow">KEYBOARD FIRST</p><h2 id="commandPaletteTitle">Where next?</h2></div>
-        <button type="button" id="closeShortcuts" aria-label="Close keyboard commands">×</button>
+        <button type="button" id="closeShortcuts" commandfor="commandPalette" command="close" aria-label="Close keyboard commands">×</button>
       </div>
       <p id="commandPaletteHelp">Press one key. App commands pause while your cursor is inside the Vim editor or a text field.</p>
       <div class="command-palette-grid">
-        <button type="button" data-shortcut-command="train"><kbd>t</kbd><span><strong>Train</strong><small>Return focus to Vim</small></span></button>
-        <button type="button" data-shortcut-command="path"><kbd>p</kbd><span><strong>Path</strong><small>Browse your curriculum</small></span></button>
-        <button type="button" data-shortcut-command="handbook"><kbd>b</kbd><span><strong>Handbook</strong><small>Search Vim commands</small></span></button>
+        <button type="button" data-shortcut-command="train"><kbd>t</kbd><span><strong>Vim dojo</strong><small>Return focus to Vim</small></span></button>
+        <button type="button" data-shortcut-command="xpath"><kbd>x</kbd><span><strong>XPath dojo</strong><small>Select nodes in the specimen</small></span></button>
+        <button type="button" data-shortcut-command="path"><kbd>p</kbd><span><strong>Vim path</strong><small>Browse the Vim curriculum</small></span></button>
+        <button type="button" data-shortcut-command="handbook"><kbd>b</kbd><span><strong>Vim handbook</strong><small>Search Vim commands</small></span></button>
         <button type="button" data-shortcut-command="hint"><kbd>h</kbd><span><strong>Hint</strong><small>Reveal the current clue</small></span></button>
         <button type="button" data-shortcut-command="focus"><kbd>f</kbd><span><strong>Focus mode</strong><small>Expand the terminal</small></span></button>
         <button type="button" data-shortcut-command="settings"><kbd>s</kbd><span><strong>Preferences</strong><small>Theme, sound, contrast</small></span></button>

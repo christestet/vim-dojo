@@ -1,7 +1,7 @@
 {
-  "name": "Keiko — Vim Practice Hall",
+  "name": "Keiko — Vim and XPath Dojo",
   "short_name": "Keiko",
-  "description": "Build Vim muscle memory through short, focused keyboard katas.",
+  "description": "Practice Vim muscle memory and powerful XPath selection through focused katas.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
