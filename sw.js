@@ -1,9 +1,9 @@
-const CACHE_NAME = "keiko-v24";
+const CACHE_NAME = "keiko-v25";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=21",
-  "./app.js?v=17",
+  "./styles.css?v=22",
+  "./app.js?v=18",
   "./manifest.webmanifest",
   "./assets/icon.svg",
   "./assets/fonts/JetBrainsMono-Regular.woff2",

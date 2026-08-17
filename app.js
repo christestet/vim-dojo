@@ -211,141 +211,136 @@ const missions = [
 
 const xpathLessons = [
   {
-    chapter: "Roots", concept: "DESCENDANTS", title: "Call every card",
-    prompt: "Select every recipe card.", explanation: "Double slash searches through every descendant in the document.",
-    syntax: "//element", answer: "//article", placeholder: "//article",
-    hint: "Use the element name after a double slash: <code>//article</code>.",
-    source: `<section class="tasting-board">
-  <article class="treat-card" data-kind="tea">
-    <h3>Matcha Cloud</h3><p>green tea · rice</p>
-  </article>
-  <article class="treat-card special" data-kind="fruit">
-    <h3>Citrus Moon</h3><p>lemon · yuzu</p>
-  </article>
-  <article class="treat-card" data-kind="tea">
-    <h3>Hojicha Ember</h3><p>roasted tea · cocoa</p>
-  </article>
+    chapter: "Roots", concept: "DESCENDANTS", title: "Set the plates",
+    prompt: "Select every plate on the table.", explanation: "Double slash searches through every descendant in the document.",
+    syntax: "//element", answer: "//plate", placeholder: "//plate",
+    hint: "Use the element name after a double slash: <code>//plate</code>.",
+    source: `<section class="diner-table" aria-label="A table set with three plates">
+  <plate>Plate</plate>
+  <plate>Plate</plate>
+  <plate>Plate</plate>
 </section>`
   },
   {
-    chapter: "Roots", concept: "NESTED NODES", title: "Name the dishes",
-    prompt: "Select every heading inside a recipe card.", explanation: "Chain descendant steps to move from a broad container to a specific node.",
-    syntax: "//ancestor//descendant", answer: "//article//h3", placeholder: "//article//h3",
-    hint: "First find every <code>article</code>, then descend to each <code>h3</code>.",
-    source: `<section class="tasting-board">
-  <article class="treat-card"><h3>Matcha Cloud</h3><p>green tea · rice</p></article>
-  <article class="treat-card"><h3>Citrus Moon</h3><p>lemon · yuzu</p></article>
-  <article class="treat-card"><h3>Hojicha Ember</h3><p>roasted tea · cocoa</p></article>
+    chapter: "Roots", concept: "NESTED NODES", title: "Find the plated apples",
+    prompt: "Select every apple inside a plate.", explanation: "Chain descendant steps to move from a broad container to a specific node.",
+    syntax: "//ancestor//descendant", answer: "//plate//apple", placeholder: "//plate//apple",
+    hint: "First find every <code>plate</code>, then descend to each <code>apple</code>.",
+    source: `<section class="diner-table" aria-label="Fruit arranged on plates">
+  <plate><apple class="red">Fuji</apple></plate>
+  <plate><orange>Navel</orange></plate>
+  <plate><apple class="green">Granny Smith</apple></plate>
 </section>`
   },
   {
-    chapter: "Predicates", concept: "ATTRIBUTES", title: "Steep only tea",
-    prompt: "Select cards whose data-kind is tea.", explanation: "Square brackets filter a node set. Prefix an attribute name with @.",
-    syntax: "//*[@attribute='value']", answer: "//article[@data-kind='tea']", placeholder: "//article[@data-kind='tea']",
-    hint: "Filter <code>article</code> with <code>[@data-kind='tea']</code>.",
-    source: `<section class="tasting-board">
-  <article class="treat-card" data-kind="tea"><h3>Matcha Cloud</h3><p>green tea · rice</p></article>
-  <article class="treat-card" data-kind="fruit"><h3>Citrus Moon</h3><p>lemon · yuzu</p></article>
-  <article class="treat-card" data-kind="tea"><h3>Hojicha Ember</h3><p>roasted tea · cocoa</p></article>
+    chapter: "Predicates", concept: "ATTRIBUTES", title: "Pick the red apples",
+    prompt: "Select apples whose data-color is red.", explanation: "Square brackets filter a node set. Prefix an attribute name with @.",
+    syntax: "//*[@attribute='value']", answer: "//apple[@data-color='red']", placeholder: "//apple[@data-color='red']",
+    hint: "Filter <code>apple</code> with <code>[@data-color='red']</code>.",
+    source: `<section class="diner-table" aria-label="A row of apples">
+  <apple class="red" data-color="red">Fuji</apple>
+  <apple class="green" data-color="green">Granny Smith</apple>
+  <apple class="red" data-color="red">Gala</apple>
 </section>`
   },
   {
-    chapter: "Predicates", concept: "CONTAINS", title: "Find the specials",
-    prompt: "Select cards whose class contains special.", explanation: "contains() handles attributes that hold several tokens or partial values.",
-    syntax: "contains(@attribute, 'text')", answer: "//article[contains(@class, 'special')]", placeholder: "//article[contains(@class, 'special')]",
-    hint: "Inside the predicate, test <code>contains(@class, 'special')</code>.",
-    source: `<section class="tasting-board">
-  <article class="treat-card special" data-kind="tea"><h3>Matcha Cloud</h3><p>green tea · rice</p></article>
-  <article class="treat-card"><h3>Citrus Moon</h3><p>lemon · yuzu</p></article>
-  <article class="treat-card special seasonal"><h3>Hojicha Ember</h3><p>roasted tea · cocoa</p></article>
+    chapter: "Predicates", concept: "CONTAINS", title: "Choose the small fruit",
+    prompt: "Select apples whose class contains small.", explanation: "contains() handles attributes that hold several tokens or partial values.",
+    syntax: "contains(@attribute, 'text')", answer: "//apple[contains(@class, 'small')]", placeholder: "//apple[contains(@class, 'small')]",
+    hint: "Inside the predicate, test <code>contains(@class, 'small')</code>.",
+    source: `<section class="diner-table" aria-label="Apples in two sizes">
+  <apple class="red small">Crabapple</apple>
+  <apple class="green">Granny Smith</apple>
+  <apple class="red small ripe">Gala</apple>
 </section>`
   },
   {
-    chapter: "Text", concept: "NORMALIZE SPACE", title: "Ignore the whitespace",
-    prompt: "Select the card titled “Matcha Cloud”.", explanation: "normalize-space() trims edges and collapses repeated whitespace before comparing text.",
-    syntax: "normalize-space()='text'", answer: "//article[h3[normalize-space()='Matcha Cloud']]", placeholder: "//article[h3[normalize-space()='Matcha Cloud']]",
-    hint: "Filter the <code>article</code> by its child: <code>h3[normalize-space()='Matcha Cloud']</code>.",
-    source: `<section class="tasting-board">
-  <article class="treat-card"><h3>  Matcha   Cloud  </h3><p>green tea · rice</p></article>
-  <article class="treat-card"><h3>Citrus Moon</h3><p>lemon · yuzu</p></article>
-  <article class="treat-card"><h3>Hojicha Ember</h3><p>roasted tea · cocoa</p></article>
+    chapter: "Text", concept: "NORMALIZE SPACE", title: "Read the fruit label",
+    prompt: "Select the plate holding “Granny Smith”.", explanation: "normalize-space() trims edges and collapses repeated whitespace before comparing text.",
+    syntax: "normalize-space()='text'", answer: "//plate[apple[normalize-space()='Granny Smith']]", placeholder: "//plate[apple[normalize-space()='Granny Smith']]",
+    hint: "Filter the <code>plate</code> by its child: <code>apple[normalize-space()='Granny Smith']</code>.",
+    source: `<section class="diner-table" aria-label="Three labeled apples on plates">
+  <plate><apple class="red">Fuji</apple></plate>
+  <plate><apple class="green">  Granny   Smith  </apple></plate>
+  <plate><apple class="red">Gala</apple></plate>
 </section>`
   },
   {
-    chapter: "Text", concept: "NESTED CONDITION", title: "Spot the sell-out",
-    prompt: "Select the card that contains a sold-out badge.", explanation: "A dot anchors the nested search to each candidate node instead of the whole document.",
-    syntax: "[.//descendant]", answer: "//article[.//span[@class='sold-out']]", placeholder: "//article[.//span[@class='sold-out']]",
-    hint: "Ask each card whether it has <code>.//span[@class='sold-out']</code>.",
-    source: `<section class="tasting-board">
-  <article class="treat-card"><h3>Matcha Cloud</h3><p>green tea · rice</p></article>
-  <article class="treat-card"><h3>Citrus Moon</h3><p>lemon · yuzu</p><span class="sold-out">sold out</span></article>
-  <article class="treat-card"><h3>Hojicha Ember</h3><p>roasted tea · cocoa</p></article>
+    chapter: "Text", concept: "NESTED CONDITION", title: "Open the pickle box",
+    prompt: "Select the bento that contains a pickle.", explanation: "A dot anchors the nested search to each candidate node instead of the whole document.",
+    syntax: "[.//descendant]", answer: "//bento[.//pickle[@class='pickle']]", placeholder: "//bento[.//pickle[@class='pickle']]",
+    hint: "Ask each bento whether it has <code>.//pickle[@class='pickle']</code>.",
+    source: `<section class="diner-table" aria-label="Two bento boxes">
+  <bento><apple class="green">Mutsu</apple></bento>
+  <bento><pickle class="pickle">Dill</pickle></bento>
 </section>`
   },
   {
-    chapter: "Position", concept: "GROUPED POSITION", title: "Choose the second topping",
-    prompt: "Select the second topping in the list.", explanation: "Parentheses form one result set before the positional predicate is applied.",
-    syntax: "(//path)[2]", answer: "(//ul[@class='toppings']/li)[2]", placeholder: "(//ul[@class='toppings']/li)[2]",
-    hint: "Wrap the full list path in parentheses, then add <code>[2]</code>.",
-    source: `<section class="tasting-board single">
-  <article class="treat-card wide"><h3>Build a parfait</h3>
-    <ul class="toppings"><li>sesame</li><li>matcha</li><li>yuzu</li><li>azuki</li></ul>
-  </article>
+    chapter: "Position", concept: "GROUPED POSITION", title: "Take the second apple",
+    prompt: "Select the second apple in the fruit row.", explanation: "Parentheses form one result set before the positional predicate is applied.",
+    syntax: "(//path)[2]", answer: "(//div[@class='fruit-row']/apple)[2]", placeholder: "(//div[@class='fruit-row']/apple)[2]",
+    hint: "Wrap the full apple path in parentheses, then add <code>[2]</code>.",
+    source: `<section class="diner-table" aria-label="A row of four apples">
+  <div class="fruit-row">
+    <apple class="red">Fuji</apple><apple class="green">Mutsu</apple>
+    <apple class="red">Gala</apple><apple class="green">Crispin</apple>
+  </div>
 </section>`
   },
   {
-    chapter: "Position", concept: "LAST", title: "Take the final topping",
-    prompt: "Select the last topping, whatever the list length.", explanation: "last() returns the size of the current node set, so the expression survives changing data.",
-    syntax: "path[last()]", answer: "//ul[@class='toppings']/li[last()]", placeholder: "//ul[@class='toppings']/li[last()]",
-    hint: "Filter the <code>li</code> step with the function <code>[last()]</code>.",
-    source: `<section class="tasting-board single">
-  <article class="treat-card wide"><h3>Build a parfait</h3>
-    <ul class="toppings"><li>sesame</li><li>matcha</li><li>yuzu</li><li>azuki</li></ul>
-  </article>
+    chapter: "Position", concept: "LAST", title: "Take the final apple",
+    prompt: "Select the last apple, whatever the row length.", explanation: "last() returns the size of the current node set, so the expression survives changing data.",
+    syntax: "path[last()]", answer: "//div[@class='fruit-row']/apple[last()]", placeholder: "//div[@class='fruit-row']/apple[last()]",
+    hint: "Filter the <code>apple</code> step with the function <code>[last()]</code>.",
+    source: `<section class="diner-table" aria-label="A row of four apples">
+  <div class="fruit-row">
+    <apple class="red">Fuji</apple><apple class="green">Mutsu</apple>
+    <apple class="red">Gala</apple><apple class="green">Crispin</apple>
+  </div>
 </section>`
   },
   {
-    chapter: "Axes", concept: "SIBLING AXIS", title: "Follow every tea",
-    prompt: "Select the first card immediately following each tea card.", explanation: "Axes describe relationships. following-sibling:: moves sideways without returning to the parent.",
-    syntax: "following-sibling::element[1]", answer: "//article[@data-kind='tea']/following-sibling::article[1]", placeholder: "//article[@data-kind='tea']/following-sibling::article[1]",
-    hint: "From each tea article, walk the <code>following-sibling::article</code> axis and keep <code>[1]</code>.",
-    source: `<section class="tasting-board">
-  <article class="treat-card" data-kind="tea"><h3>Matcha Cloud</h3><p>green tea · rice</p></article>
-  <article class="treat-card" data-kind="fruit"><h3>Citrus Moon</h3><p>lemon · yuzu</p></article>
-  <article class="treat-card" data-kind="tea"><h3>Hojicha Ember</h3><p>roasted tea · cocoa</p></article>
-  <article class="treat-card" data-kind="nut"><h3>Sesame Stone</h3><p>black sesame · salt</p></article>
+    chapter: "Axes", concept: "SIBLING AXIS", title: "Look beside each apple",
+    prompt: "Select the first object immediately following each red apple.", explanation: "Axes describe relationships. following-sibling:: moves sideways without returning to the parent.",
+    syntax: "following-sibling::*[1]", answer: "//apple[@data-color='red']/following-sibling::*[1]", placeholder: "//apple[@data-color='red']/following-sibling::*[1]",
+    hint: "From each red apple, walk the <code>following-sibling::*</code> axis and keep <code>[1]</code>.",
+    source: `<section class="diner-table" aria-label="A mixed row of fruit and a pickle">
+  <div class="fruit-row">
+    <apple class="red" data-color="red">Fuji</apple><orange>Navel</orange>
+    <apple class="red" data-color="red">Gala</apple><pickle>Dill</pickle>
+  </div>
 </section>`
   },
   {
-    chapter: "Logic", concept: "NOT", title: "Keep what is available",
-    prompt: "Select every card without a data-sold-out attribute.", explanation: "not() turns a condition inside out; missing attributes become useful evidence.",
-    syntax: "not(@attribute)", answer: "//article[not(@data-sold-out)]", placeholder: "//article[not(@data-sold-out)]",
-    hint: "Filter cards with <code>[not(@data-sold-out)]</code>.",
-    source: `<section class="tasting-board">
-  <article class="treat-card"><h3>Matcha Cloud</h3><p>green tea · rice</p></article>
-  <article class="treat-card" data-sold-out="true"><h3>Citrus Moon</h3><p>lemon · yuzu</p></article>
-  <article class="treat-card"><h3>Hojicha Ember</h3><p>roasted tea · cocoa</p></article>
+    chapter: "Logic", concept: "NOT", title: "Find the clean plates",
+    prompt: "Select every plate without a data-used attribute.", explanation: "not() turns a condition inside out; missing attributes become useful evidence.",
+    syntax: "not(@attribute)", answer: "//plate[not(@data-used)]", placeholder: "//plate[not(@data-used)]",
+    hint: "Filter plates with <code>[not(@data-used)]</code>.",
+    source: `<section class="diner-table" aria-label="Clean and used plates">
+  <plate>Clean plate</plate>
+  <plate class="used" data-used="true">Used plate</plate>
+  <plate>Clean plate</plate>
 </section>`
   },
   {
-    chapter: "Logic", concept: "COUNT", title: "Find the loaded parfait",
-    prompt: "Select cards with at least three toppings.", explanation: "count() turns a selected node set into a number you can compare.",
-    syntax: "count(path) >= number", answer: "//article[count(.//li) >= 3]", placeholder: "//article[count(.//li) >= 3]",
-    hint: "Count list items inside each card with <code>count(.//li)</code>, then compare it with 3.",
-    source: `<section class="tasting-board duo">
-  <article class="treat-card"><h3>Small bowl</h3><ul class="toppings"><li>sesame</li><li>matcha</li></ul></article>
-  <article class="treat-card"><h3>Loaded parfait</h3><ul class="toppings"><li>yuzu</li><li>azuki</li><li>mochi</li><li>kinako</li></ul></article>
+    chapter: "Logic", concept: "COUNT", title: "Find the full bento",
+    prompt: "Select bentos holding at least three pickles.", explanation: "count() turns a selected node set into a number you can compare.",
+    syntax: "count(path) >= number", answer: "//bento[count(.//pickle) >= 3]", placeholder: "//bento[count(.//pickle) >= 3]",
+    hint: "Count pickles inside each bento with <code>count(.//pickle)</code>, then compare it with 3.",
+    source: `<section class="diner-table" aria-label="Two bento boxes with pickles">
+  <bento><div class="pickle-row"><pickle>Dill</pickle><pickle>Sweet</pickle></div></bento>
+  <bento><div class="pickle-row"><pickle>Dill</pickle><pickle>Sweet</pickle><pickle>Sour</pickle><pickle>Kosher</pickle></div></bento>
 </section>`
   },
   {
-    chapter: "Mastery", concept: "FUNCTION COMPOSITION", title: "Read without case or clutter",
-    prompt: "Select the card whose full text contains “citrus”, ignoring case and whitespace.", explanation: "Compose functions: normalize the text, translate capitals to lowercase, then test the result.",
-    syntax: "contains(translate(normalize-space(.), …), 'text')", answer: "//article[contains(translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'citrus')]", placeholder: "//article[contains(translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'citrus')]",
-    hint: "Normalize <code>.</code>, translate A–Z to a–z, then wrap that result in <code>contains(…, 'citrus')</code>.",
-    source: `<section class="tasting-board">
-  <article class="treat-card"><h3>Matcha Cloud</h3><p>green tea · rice</p></article>
-  <article class="treat-card"><h3>  CITRUS   Moon </h3><p>lemon · yuzu</p></article>
-  <article class="treat-card"><h3>Hojicha Ember</h3><p>roasted tea · cocoa</p></article>
+    chapter: "Mastery", concept: "FUNCTION COMPOSITION", title: "Read any fruit label",
+    prompt: "Select the apple whose text contains “granny”, ignoring case and whitespace.", explanation: "Compose functions: normalize the text, translate capitals to lowercase, then test the result.",
+    syntax: "contains(translate(normalize-space(.), …), 'text')", answer: "//apple[contains(translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'granny')]", placeholder: "//apple[contains(translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'granny')]",
+    hint: "Normalize <code>.</code>, translate A–Z to a–z, then wrap that result in <code>contains(…, 'granny')</code>.",
+    source: `<section class="diner-table" aria-label="Three labeled apples">
+  <apple class="red">Fuji</apple>
+  <apple class="green">  GRANNY   Smith </apple>
+  <apple class="red">Gala</apple>
 </section>`
   }
 ];

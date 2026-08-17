@@ -97,6 +97,11 @@ agent-browser --session "$session" eval --stdin >/dev/null <<'JS'
 (() => {
   showView("xpath");
   if (xpathInput.placeholder === xpathLessons[0].answer) throw new Error("XPath placeholder reveals the answer");
+  if (xpathSpecimen.querySelectorAll("plate").length !== 3) throw new Error("XPath diner did not render its opening plate set");
+  const dinerTags = new Set(xpathLessons.flatMap(lesson => [...new DOMParser().parseFromString(lesson.source, "text/html").body.querySelectorAll("*")].map(node => node.localName)));
+  ["plate", "bento", "apple", "orange", "pickle"].forEach(tag => {
+    if (!dinerTags.has(tag)) throw new Error(`XPath diner is missing its ${tag} object`);
+  });
   for (let index = 0; index < xpathLessons.length; index++) {
     loadXPathLesson(index);
     xpathInput.value = xpathLessons[index].answer;
