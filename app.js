@@ -209,6 +209,147 @@ const missions = [
   }
 ];
 
+const xpathLessons = [
+  {
+    chapter: "Roots", concept: "DESCENDANTS", title: "Call every card",
+    prompt: "Select every recipe card.", explanation: "Double slash searches through every descendant in the document.",
+    syntax: "//element", answer: "//article", placeholder: "//article",
+    hint: "Use the element name after a double slash: <code>//article</code>.",
+    source: `<section class="tasting-board">
+  <article class="treat-card" data-kind="tea">
+    <h3>Matcha Cloud</h3><p>green tea · rice</p>
+  </article>
+  <article class="treat-card special" data-kind="fruit">
+    <h3>Citrus Moon</h3><p>lemon · yuzu</p>
+  </article>
+  <article class="treat-card" data-kind="tea">
+    <h3>Hojicha Ember</h3><p>roasted tea · cocoa</p>
+  </article>
+</section>`
+  },
+  {
+    chapter: "Roots", concept: "NESTED NODES", title: "Name the dishes",
+    prompt: "Select every heading inside a recipe card.", explanation: "Chain descendant steps to move from a broad container to a specific node.",
+    syntax: "//ancestor//descendant", answer: "//article//h3", placeholder: "//article//h3",
+    hint: "First find every <code>article</code>, then descend to each <code>h3</code>.",
+    source: `<section class="tasting-board">
+  <article class="treat-card"><h3>Matcha Cloud</h3><p>green tea · rice</p></article>
+  <article class="treat-card"><h3>Citrus Moon</h3><p>lemon · yuzu</p></article>
+  <article class="treat-card"><h3>Hojicha Ember</h3><p>roasted tea · cocoa</p></article>
+</section>`
+  },
+  {
+    chapter: "Predicates", concept: "ATTRIBUTES", title: "Steep only tea",
+    prompt: "Select cards whose data-kind is tea.", explanation: "Square brackets filter a node set. Prefix an attribute name with @.",
+    syntax: "//*[@attribute='value']", answer: "//article[@data-kind='tea']", placeholder: "//article[@data-kind='tea']",
+    hint: "Filter <code>article</code> with <code>[@data-kind='tea']</code>.",
+    source: `<section class="tasting-board">
+  <article class="treat-card" data-kind="tea"><h3>Matcha Cloud</h3><p>green tea · rice</p></article>
+  <article class="treat-card" data-kind="fruit"><h3>Citrus Moon</h3><p>lemon · yuzu</p></article>
+  <article class="treat-card" data-kind="tea"><h3>Hojicha Ember</h3><p>roasted tea · cocoa</p></article>
+</section>`
+  },
+  {
+    chapter: "Predicates", concept: "CONTAINS", title: "Find the specials",
+    prompt: "Select cards whose class contains special.", explanation: "contains() handles attributes that hold several tokens or partial values.",
+    syntax: "contains(@attribute, 'text')", answer: "//article[contains(@class, 'special')]", placeholder: "//article[contains(@class, 'special')]",
+    hint: "Inside the predicate, test <code>contains(@class, 'special')</code>.",
+    source: `<section class="tasting-board">
+  <article class="treat-card special" data-kind="tea"><h3>Matcha Cloud</h3><p>green tea · rice</p></article>
+  <article class="treat-card"><h3>Citrus Moon</h3><p>lemon · yuzu</p></article>
+  <article class="treat-card special seasonal"><h3>Hojicha Ember</h3><p>roasted tea · cocoa</p></article>
+</section>`
+  },
+  {
+    chapter: "Text", concept: "NORMALIZE SPACE", title: "Ignore the whitespace",
+    prompt: "Select the card titled “Matcha Cloud”.", explanation: "normalize-space() trims edges and collapses repeated whitespace before comparing text.",
+    syntax: "normalize-space()='text'", answer: "//article[h3[normalize-space()='Matcha Cloud']]", placeholder: "//article[h3[normalize-space()='Matcha Cloud']]",
+    hint: "Filter the <code>article</code> by its child: <code>h3[normalize-space()='Matcha Cloud']</code>.",
+    source: `<section class="tasting-board">
+  <article class="treat-card"><h3>  Matcha   Cloud  </h3><p>green tea · rice</p></article>
+  <article class="treat-card"><h3>Citrus Moon</h3><p>lemon · yuzu</p></article>
+  <article class="treat-card"><h3>Hojicha Ember</h3><p>roasted tea · cocoa</p></article>
+</section>`
+  },
+  {
+    chapter: "Text", concept: "NESTED CONDITION", title: "Spot the sell-out",
+    prompt: "Select the card that contains a sold-out badge.", explanation: "A dot anchors the nested search to each candidate node instead of the whole document.",
+    syntax: "[.//descendant]", answer: "//article[.//span[@class='sold-out']]", placeholder: "//article[.//span[@class='sold-out']]",
+    hint: "Ask each card whether it has <code>.//span[@class='sold-out']</code>.",
+    source: `<section class="tasting-board">
+  <article class="treat-card"><h3>Matcha Cloud</h3><p>green tea · rice</p></article>
+  <article class="treat-card"><h3>Citrus Moon</h3><p>lemon · yuzu</p><span class="sold-out">sold out</span></article>
+  <article class="treat-card"><h3>Hojicha Ember</h3><p>roasted tea · cocoa</p></article>
+</section>`
+  },
+  {
+    chapter: "Position", concept: "GROUPED POSITION", title: "Choose the second topping",
+    prompt: "Select the second topping in the list.", explanation: "Parentheses form one result set before the positional predicate is applied.",
+    syntax: "(//path)[2]", answer: "(//ul[@class='toppings']/li)[2]", placeholder: "(//ul[@class='toppings']/li)[2]",
+    hint: "Wrap the full list path in parentheses, then add <code>[2]</code>.",
+    source: `<section class="tasting-board single">
+  <article class="treat-card wide"><h3>Build a parfait</h3>
+    <ul class="toppings"><li>sesame</li><li>matcha</li><li>yuzu</li><li>azuki</li></ul>
+  </article>
+</section>`
+  },
+  {
+    chapter: "Position", concept: "LAST", title: "Take the final topping",
+    prompt: "Select the last topping, whatever the list length.", explanation: "last() returns the size of the current node set, so the expression survives changing data.",
+    syntax: "path[last()]", answer: "//ul[@class='toppings']/li[last()]", placeholder: "//ul[@class='toppings']/li[last()]",
+    hint: "Filter the <code>li</code> step with the function <code>[last()]</code>.",
+    source: `<section class="tasting-board single">
+  <article class="treat-card wide"><h3>Build a parfait</h3>
+    <ul class="toppings"><li>sesame</li><li>matcha</li><li>yuzu</li><li>azuki</li></ul>
+  </article>
+</section>`
+  },
+  {
+    chapter: "Axes", concept: "SIBLING AXIS", title: "Follow every tea",
+    prompt: "Select the first card immediately following each tea card.", explanation: "Axes describe relationships. following-sibling:: moves sideways without returning to the parent.",
+    syntax: "following-sibling::element[1]", answer: "//article[@data-kind='tea']/following-sibling::article[1]", placeholder: "//article[@data-kind='tea']/following-sibling::article[1]",
+    hint: "From each tea article, walk the <code>following-sibling::article</code> axis and keep <code>[1]</code>.",
+    source: `<section class="tasting-board">
+  <article class="treat-card" data-kind="tea"><h3>Matcha Cloud</h3><p>green tea · rice</p></article>
+  <article class="treat-card" data-kind="fruit"><h3>Citrus Moon</h3><p>lemon · yuzu</p></article>
+  <article class="treat-card" data-kind="tea"><h3>Hojicha Ember</h3><p>roasted tea · cocoa</p></article>
+  <article class="treat-card" data-kind="nut"><h3>Sesame Stone</h3><p>black sesame · salt</p></article>
+</section>`
+  },
+  {
+    chapter: "Logic", concept: "NOT", title: "Keep what is available",
+    prompt: "Select every card without a data-sold-out attribute.", explanation: "not() turns a condition inside out; missing attributes become useful evidence.",
+    syntax: "not(@attribute)", answer: "//article[not(@data-sold-out)]", placeholder: "//article[not(@data-sold-out)]",
+    hint: "Filter cards with <code>[not(@data-sold-out)]</code>.",
+    source: `<section class="tasting-board">
+  <article class="treat-card"><h3>Matcha Cloud</h3><p>green tea · rice</p></article>
+  <article class="treat-card" data-sold-out="true"><h3>Citrus Moon</h3><p>lemon · yuzu</p></article>
+  <article class="treat-card"><h3>Hojicha Ember</h3><p>roasted tea · cocoa</p></article>
+</section>`
+  },
+  {
+    chapter: "Logic", concept: "COUNT", title: "Find the loaded parfait",
+    prompt: "Select cards with at least three toppings.", explanation: "count() turns a selected node set into a number you can compare.",
+    syntax: "count(path) >= number", answer: "//article[count(.//li) >= 3]", placeholder: "//article[count(.//li) >= 3]",
+    hint: "Count list items inside each card with <code>count(.//li)</code>, then compare it with 3.",
+    source: `<section class="tasting-board duo">
+  <article class="treat-card"><h3>Small bowl</h3><ul class="toppings"><li>sesame</li><li>matcha</li></ul></article>
+  <article class="treat-card"><h3>Loaded parfait</h3><ul class="toppings"><li>yuzu</li><li>azuki</li><li>mochi</li><li>kinako</li></ul></article>
+</section>`
+  },
+  {
+    chapter: "Mastery", concept: "FUNCTION COMPOSITION", title: "Read without case or clutter",
+    prompt: "Select the card whose full text contains “citrus”, ignoring case and whitespace.", explanation: "Compose functions: normalize the text, translate capitals to lowercase, then test the result.",
+    syntax: "contains(translate(normalize-space(.), …), 'text')", answer: "//article[contains(translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'citrus')]", placeholder: "//article[contains(translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'citrus')]",
+    hint: "Normalize <code>.</code>, translate A–Z to a–z, then wrap that result in <code>contains(…, 'citrus')</code>.",
+    source: `<section class="tasting-board">
+  <article class="treat-card"><h3>Matcha Cloud</h3><p>green tea · rice</p></article>
+  <article class="treat-card"><h3>  CITRUS   Moon </h3><p>lemon · yuzu</p></article>
+  <article class="treat-card"><h3>Hojicha Ember</h3><p>roasted tea · cocoa</p></article>
+</section>`
+  }
+];
+
 const commandGroups = [
   { title: "Move", items: [["h", "one character left"], ["j", "one line down"], ["k", "one line up"], ["l", "one character right"], ["w", "next word start"], ["b", "previous word start"], ["e", "end of word"]] },
   { title: "Travel", items: [["0", "start of line"], ["^", "first non-blank"], ["$", "end of line"], ["gg", "first line"], ["G", "last line"], ["f?", "next ? on line"], ["F?", "previous ? on line"]] },
@@ -222,7 +363,7 @@ const commandGroups = [
 ];
 
 const STORAGE_KEY = "keiko-vim-dojo-v1";
-const defaultProgress = { completed: [], xp: 0, best: {}, daily: {}, reviews: {}, welcomed: false, sound: true, contrast: false, theme: "system" };
+const defaultProgress = { completed: [], xpathCompleted: [], xp: 0, best: {}, daily: {}, vimDaily: {}, xpathDaily: {}, reviews: {}, welcomed: false, sound: true, contrast: false, theme: "system" };
 let progress = loadProgress();
 let missionIndex = Math.min(progress.completed.length, missions.length - 1);
 let editor = null;
@@ -234,14 +375,30 @@ let errors = 0;
 let successLocked = false;
 let toastTimer;
 let activeCommandGroup = "All";
+let baseView = "train";
+let xpathLessonIndex = 0;
+let xpathDocument = null;
+let welcomeDestination = "train";
 
 const $ = id => document.getElementById(id);
 const themeMedia = window.matchMedia("(prefers-color-scheme: dark)");
 const motionMedia = window.matchMedia("(prefers-reduced-motion: reduce)");
 
+function freshProgress() {
+  return { ...defaultProgress, completed: [], xpathCompleted: [], best: {}, daily: {}, vimDaily: {}, xpathDaily: {}, reviews: {} };
+}
+
 function loadProgress() {
-  try { return { ...defaultProgress, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") }; }
-  catch { return { ...defaultProgress }; }
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    const saved = { ...freshProgress(), ...parsed };
+    if (!Array.isArray(saved.completed)) saved.completed = [];
+    if (!Array.isArray(saved.xpathCompleted)) saved.xpathCompleted = [];
+    if (!parsed.vimDaily || typeof parsed.vimDaily !== "object") saved.vimDaily = { ...saved.daily };
+    if (!saved.xpathDaily || typeof saved.xpathDaily !== "object") saved.xpathDaily = {};
+    return saved;
+  }
+  catch { return freshProgress(); }
 }
 
 function saveProgress() { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); }
@@ -257,12 +414,14 @@ function currentMission() { return missions[missionIndex]; }
 
 function init() {
   applyTheme(progress.theme || "system");
+  xpathLessonIndex = Math.min(progress.xpathCompleted.length, xpathLessons.length - 1);
   bindEvents();
   renderKataList();
   renderCurriculum();
   renderCommandFilters();
   renderHandbook();
   updateProgressUI();
+  renderXPathLesson(false);
   loadMission(missionIndex, false, false);
   if (progress.welcomed) focusEditor();
   else $("welcomeModal").showModal();
@@ -273,8 +432,9 @@ function init() {
 
 function bindEvents() {
   document.querySelectorAll("[data-view-link]").forEach(button => button.addEventListener("click", () => showView(button.dataset.viewLink)));
-  $("startTraining").addEventListener("click", closeWelcome);
-  $("closeWelcome").addEventListener("click", closeWelcome);
+  $("startTraining").addEventListener("click", () => closeWelcome("train"));
+  $("startXPath").addEventListener("click", () => closeWelcome("xpath"));
+  $("closeWelcome").addEventListener("click", () => closeWelcome("train"));
   $("welcomeModal").addEventListener("close", finishWelcome);
   $("successModal").addEventListener("cancel", event => { event.preventDefault(); repeatMission(); });
   $("resetMission").addEventListener("click", () => runTransition(() => loadMission(missionIndex)));
@@ -293,9 +453,7 @@ function bindEvents() {
   $("openSettings").addEventListener("click", openSettings);
   $("openShortcuts").addEventListener("click", openShortcutPalette);
   document.querySelectorAll("[data-quick-action]").forEach(button => button.addEventListener("click", () => runQuickAction(button.dataset.quickAction)));
-  $("closeShortcuts").addEventListener("click", () => $("commandPalette").close());
   $("commandPalette").querySelectorAll("[data-shortcut-command]").forEach(button => button.addEventListener("click", () => runShortcutCommand(button.dataset.shortcutCommand)));
-  document.querySelectorAll("[data-close-overlay]").forEach(button => button.addEventListener("click", () => button.closest("dialog").close()));
   document.querySelectorAll(".overlay-view").forEach(dialog => dialog.addEventListener("close", restoreTrainingView));
   $("themeCycle").addEventListener("click", cycleTheme);
   document.querySelectorAll('input[name="theme"]').forEach(input => input.addEventListener("change", event => {
@@ -309,26 +467,42 @@ function bindEvents() {
   $("contrastToggle").addEventListener("change", e => { progress.contrast = e.target.checked; document.body.classList.toggle("high-contrast", progress.contrast); saveProgress(); });
   $("resetProgress").addEventListener("click", resetAllProgress);
   $("commandSearch").addEventListener("input", e => renderHandbook(e.target.value));
+  $("xpathForm").addEventListener("submit", runXPathSelection);
+  $("xpathInput").addEventListener("input", clearXPathRunState);
+  $("xpathReset").addEventListener("click", () => renderXPathLesson(true));
+  $("xpathPrevious").addEventListener("click", () => loadXPathLesson(xpathLessonIndex - 1));
+  $("xpathNext").addEventListener("click", () => loadXPathLesson(xpathLessonIndex + 1));
   document.addEventListener("keydown", globalShortcuts);
 }
 
-function closeWelcome() {
+function closeWelcome(destination = "train") {
+  welcomeDestination = destination;
   $("welcomeModal").close();
 }
 
 function finishWelcome() {
   progress.welcomed = true;
   saveProgress();
-  focusEditor();
+  showView(welcomeDestination);
 }
 
 function showView(view) {
-  const target = view === "train" ? null : $(`${view}View`);
+  const isBaseView = view === "train" || view === "xpath";
+  const target = isBaseView ? null : $(`${view}View`);
   document.querySelectorAll(".overlay-view[open]").forEach(dialog => {
     if (dialog !== target) dialog.close();
   });
   updateNavigation(view);
-  if (!target) { focusEditor(); return; }
+  if (isBaseView) {
+    baseView = view;
+    $("trainView").hidden = view !== "train";
+    $("trainView").classList.toggle("active", view === "train");
+    $("xpathView").hidden = view !== "xpath";
+    $("xpathView").classList.toggle("active", view === "xpath");
+    if (view === "train") focusEditor();
+    else focusAfterDialog($("xpathInput"));
+    return;
+  }
   if (!target.open) target.showModal();
   requestAnimationFrame(() => (view === "handbook" ? $("commandSearch") : $("resumeTraining")).focus());
 }
@@ -344,11 +518,18 @@ function updateNavigation(view) {
 
 function restoreTrainingView() {
   const openOverlay = document.querySelector(".overlay-view[open]");
-  updateNavigation(openOverlay ? openOverlay.id.replace("View", "") : "train");
-  if (!openOverlay) focusEditor();
+  updateNavigation(openOverlay ? openOverlay.id.replace("View", "") : baseView);
+  if (!openOverlay) {
+    if (baseView === "train") focusEditor();
+    else focusAfterDialog($("xpathInput"));
+  }
 }
 
-function focusEditor() { requestAnimationFrame(() => $("editorShell").focus({ preventScroll: true })); }
+function focusAfterDialog(element) {
+  setTimeout(() => element.focus({ preventScroll: true }), 80);
+}
+
+function focusEditor() { focusAfterDialog($("editorShell")); }
 
 function loadMission(index, asReview = false, refocus = true) {
   missionIndex = index;
@@ -963,6 +1144,7 @@ function showSuccess() {
   progress.best[mission.id] = Math.min(progress.best[mission.id] || Infinity, moveCount);
   progress.reviews[mission.id] = Date.now();
   progress.daily[todayKey()] = (progress.daily[todayKey()] || 0) + 1;
+  progress.vimDaily[todayKey()] = (progress.vimDaily[todayKey()] || 0) + 1;
   saveProgress();
   updateProgressUI(); renderKataList(); renderCurriculum();
   $("earnedXp").textContent = `+${earned}`;
@@ -1023,6 +1205,172 @@ function renderCurriculum() {
   $("curriculumGrid").querySelectorAll(".path-card:not(:disabled)").forEach(button => button.addEventListener("click", () => runTransition(() => { loadMission(Number(button.dataset.index)); showView("train"); })));
 }
 
+function loadXPathLesson(index) {
+  if (index < 0 || index >= xpathLessons.length || index > progress.xpathCompleted.length) return;
+  xpathLessonIndex = index;
+  renderXPathLesson(true);
+}
+
+function renderXPathLesson(refocus = true) {
+  const lesson = xpathLessons[xpathLessonIndex];
+  const parser = new DOMParser();
+  xpathDocument = parser.parseFromString(`<!doctype html><html><body>${lesson.source}</body></html>`, "text/html");
+  [...xpathDocument.body.querySelectorAll("*")].forEach((node, index) => node.dataset.xkey = `node-${index}`);
+
+  $("xpathMissionLabel").textContent = `LESSON ${String(xpathLessonIndex + 1).padStart(2, "0")} OF ${xpathLessons.length}`;
+  $("xpathMissionTitle").textContent = lesson.title;
+  $("xpathBriefNo").textContent = String(xpathLessonIndex + 1).padStart(2, "0");
+  $("xpathConcept").textContent = lesson.concept;
+  $("xpathPrompt").textContent = lesson.prompt;
+  $("xpathExplanation").textContent = lesson.explanation;
+  $("xpathSyntax").textContent = lesson.syntax;
+  $("xpathSpecimen").innerHTML = xpathDocument.body.innerHTML;
+  $("xpathSource").textContent = lesson.source;
+  $("xpathInput").value = "";
+  $("xpathInput").placeholder = "Write an XPath expression…";
+  $("xpathFeedback").textContent = "Your matches will light up in the specimen.";
+  $("xpathFeedback").className = "xpath-feedback";
+  $("xpathMatchCount").textContent = "0 nodes selected";
+  $("xpathHintText").innerHTML = lesson.hint;
+  $("xpathHintDetails").open = false;
+  $("xpathPrevious").disabled = xpathLessonIndex === 0;
+  $("xpathNext").disabled = xpathLessonIndex >= xpathLessons.length - 1 || xpathLessonIndex >= progress.xpathCompleted.length;
+  $("xpathSpecimen").closest(".xpath-specimen-shell").classList.remove("success", "has-run");
+
+  const expected = evaluateXPathNodes(lesson.answer).nodes;
+  expected.forEach(node => {
+    const key = node.nodeType === Node.ELEMENT_NODE ? node.dataset.xkey : node.parentElement?.dataset.xkey;
+    if (key) $("xpathSpecimen").querySelector(`[data-xkey="${key}"]`)?.classList.add("xpath-target");
+  });
+  renderXPathLessonList();
+  updateXPathProgress();
+  if (refocus) requestAnimationFrame(() => $("xpathInput").focus());
+}
+
+function renderXPathLessonList() {
+  let previousChapter = "";
+  $("xpathLessonList").innerHTML = xpathLessons.map((lesson, index) => {
+    const complete = progress.xpathCompleted.includes(index);
+    const unlocked = index <= progress.xpathCompleted.length;
+    const chapter = lesson.chapter !== previousChapter ? `<p>${escapeHtml(lesson.chapter)}</p>` : "";
+    previousChapter = lesson.chapter;
+    return `${chapter}<button type="button" data-xpath-lesson="${index}" class="${index === xpathLessonIndex ? "active" : ""} ${complete ? "complete" : ""}" title="${escapeHtml(lesson.title)}" ${unlocked ? "" : "disabled"}><span>${complete ? "✓" : String(index + 1).padStart(2, "0")}</span><strong>${escapeHtml(lesson.title)}</strong><i>${unlocked ? "→" : "⌁"}</i></button>`;
+  }).join("");
+  $("xpathLessonList").querySelectorAll("button:not(:disabled)").forEach(button => button.addEventListener("click", () => loadXPathLesson(Number(button.dataset.xpathLesson))));
+  $("xpathChapterLabel").textContent = `${String(xpathLessonIndex + 1).padStart(2, "0")} · ${xpathLessons[xpathLessonIndex].chapter.toUpperCase()}`;
+}
+
+function updateXPathProgress() {
+  const completed = progress.xpathCompleted.length;
+  const today = progress.xpathDaily[todayKey()] || 0;
+  $("xpathProgressText").textContent = `${completed} / ${xpathLessons.length}`;
+  $("xpathMeterFill").style.width = `${completed / xpathLessons.length * 100}%`;
+  $("xpathProgressGlyph").textContent = completed === xpathLessons.length ? "✓" : "//";
+  $("xpathDailyText").textContent = `${Math.min(today, 5)} / 5 lessons`;
+}
+
+function evaluateXPathNodes(expression) {
+  if (!xpathDocument) return { nodes: [], kind: "empty" };
+  const result = xpathDocument.evaluate(expression, xpathDocument, null, XPathResult.ANY_TYPE, null);
+  const nodes = [];
+  if (result.resultType === XPathResult.UNORDERED_NODE_ITERATOR_TYPE || result.resultType === XPathResult.ORDERED_NODE_ITERATOR_TYPE) {
+    let node;
+    while ((node = result.iterateNext())) nodes.push(node);
+    return { nodes, kind: "nodes" };
+  }
+  if (result.resultType === XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE || result.resultType === XPathResult.ORDERED_NODE_SNAPSHOT_TYPE) {
+    for (let index = 0; index < result.snapshotLength; index++) nodes.push(result.snapshotItem(index));
+    return { nodes, kind: "nodes" };
+  }
+  if (result.resultType === XPathResult.ANY_UNORDERED_NODE_TYPE || result.resultType === XPathResult.FIRST_ORDERED_NODE_TYPE) {
+    if (result.singleNodeValue) nodes.push(result.singleNodeValue);
+    return { nodes, kind: "nodes" };
+  }
+  const kind = result.resultType === XPathResult.BOOLEAN_TYPE ? "boolean" : result.resultType === XPathResult.NUMBER_TYPE ? "number" : "string";
+  return { nodes, kind };
+}
+
+function xpathNodeKey(node) {
+  if (node.nodeType === Node.ELEMENT_NODE) return node.dataset.xkey || "";
+  return node.parentElement?.dataset.xkey || "";
+}
+
+function clearXPathRunState() {
+  $("xpathSpecimen").querySelectorAll(".xpath-match").forEach(node => node.classList.remove("xpath-match"));
+  $("xpathSpecimen").closest(".xpath-specimen-shell").classList.remove("success", "has-run");
+  $("xpathFeedback").textContent = "Press Enter to run this expression.";
+  $("xpathFeedback").className = "xpath-feedback";
+  $("xpathMatchCount").textContent = "0 nodes selected";
+}
+
+function runXPathSelection(event) {
+  event.preventDefault();
+  const expression = $("xpathInput").value.trim();
+  const specimenShell = $("xpathSpecimen").closest(".xpath-specimen-shell");
+  $("xpathSpecimen").querySelectorAll(".xpath-match").forEach(node => node.classList.remove("xpath-match"));
+  specimenShell.classList.remove("success");
+  if (!expression) {
+    $("xpathFeedback").textContent = "Write an XPath expression first.";
+    $("xpathFeedback").className = "xpath-feedback error";
+    return;
+  }
+
+  let selected;
+  try { selected = evaluateXPathNodes(expression); }
+  catch (error) {
+    $("xpathFeedback").textContent = `XPath could not be parsed: ${error.message.replace(/^.*?:\s*/, "")}`;
+    $("xpathFeedback").className = "xpath-feedback error";
+    $("xpathMatchCount").textContent = "syntax error";
+    specimenShell.classList.add("has-run");
+    return;
+  }
+
+  if (selected.kind !== "nodes") {
+    $("xpathFeedback").textContent = `That expression returns a ${selected.kind}. This lesson needs a set of nodes.`;
+    $("xpathFeedback").className = "xpath-feedback error";
+    $("xpathMatchCount").textContent = `returned ${selected.kind}`;
+    specimenShell.classList.add("has-run");
+    return;
+  }
+
+  const selectedKeys = [...new Set(selected.nodes.map(xpathNodeKey).filter(Boolean))];
+  selectedKeys.forEach(key => $("xpathSpecimen").querySelector(`[data-xkey="${key}"]`)?.classList.add("xpath-match"));
+  const expectedKeys = [...new Set(evaluateXPathNodes(xpathLessons[xpathLessonIndex].answer).nodes.map(xpathNodeKey).filter(Boolean))];
+  const exact = selectedKeys.length === expectedKeys.length && selectedKeys.every(key => expectedKeys.includes(key));
+  $("xpathMatchCount").textContent = `${selectedKeys.length} node${selectedKeys.length === 1 ? "" : "s"} selected`;
+  specimenShell.classList.add("has-run");
+
+  if (exact) completeXPathLesson();
+  else {
+    const direction = selectedKeys.length > expectedKeys.length ? "Too broad" : selectedKeys.length ? "Not quite" : "No matches";
+    $("xpathFeedback").textContent = `${direction}: the target is ${expectedKeys.length} node${expectedKeys.length === 1 ? "" : "s"}, and your expression selected ${selectedKeys.length}.`;
+    $("xpathFeedback").className = "xpath-feedback error";
+  }
+}
+
+function completeXPathLesson() {
+  const firstCompletion = !progress.xpathCompleted.includes(xpathLessonIndex);
+  if (firstCompletion) {
+    progress.xpathCompleted.push(xpathLessonIndex);
+    progress.xpathCompleted.sort((a, b) => a - b);
+    progress.xp += 20;
+    progress.daily[todayKey()] = (progress.daily[todayKey()] || 0) + 1;
+    progress.xpathDaily[todayKey()] = (progress.xpathDaily[todayKey()] || 0) + 1;
+    saveProgress();
+    updateProgressUI();
+  }
+  $("xpathSpecimen").closest(".xpath-specimen-shell").classList.add("success");
+  const finalLesson = xpathLessonIndex === xpathLessons.length - 1;
+  $("xpathFeedback").textContent = finalLesson
+    ? firstCompletion ? "Path complete. +20 XP — every XPath lesson is now open for review." : "Path complete. Revisit any lesson from the DOM trail."
+    : firstCompletion ? "Exact match. +20 XP — the next branch is now open." : "Exact match. This branch is already mastered.";
+  $("xpathFeedback").className = "xpath-feedback good";
+  $("xpathNext").disabled = xpathLessonIndex >= xpathLessons.length - 1;
+  renderXPathLessonList();
+  updateXPathProgress();
+  if (firstCompletion && progress.sound) playSuccessTone();
+}
+
 function renderCommandFilters() {
   const groups = ["All", ...commandGroups.map(group => group.title)];
   $("commandFilters").innerHTML = groups.map(group => `<button type="button" data-command-group="${escapeHtml(group)}" aria-pressed="${group === activeCommandGroup}" class="${group === activeCommandGroup ? "active" : ""}">${escapeHtml(group)}</button>`).join("");
@@ -1049,7 +1397,7 @@ function renderHandbook(query = "") {
 }
 
 function updateProgressUI() {
-  const today = progress.daily[todayKey()] || 0;
+  const today = progress.vimDaily[todayKey()] || 0;
   const completed = progress.completed.length;
   $("xpCount").textContent = progress.xp;
   $("dailyProgressText").textContent = `${Math.min(today, 5)} / 5`;
@@ -1151,7 +1499,7 @@ function closeSettings() {
 function resetAllProgress() {
   if (!window.confirm("Reset every completed kata, score, and streak?")) return;
   localStorage.removeItem(STORAGE_KEY);
-  progress = { ...defaultProgress };
+  progress = freshProgress();
   applyTheme(progress.theme);
   $("soundToggle").checked = progress.sound;
   $("contrastToggle").checked = progress.contrast;
@@ -1169,7 +1517,7 @@ function globalShortcuts(event) {
   const key = event.key.toLowerCase();
   const palette = $("commandPalette");
   if (palette.open) {
-    const command = { t: "train", p: "path", b: "handbook", h: "hint", f: "focus", s: "settings" }[key];
+    const command = { t: "train", x: "xpath", p: "path", b: "handbook", h: "hint", f: "focus", s: "settings" }[key];
     if (command) { event.preventDefault(); runShortcutCommand(command); }
     return;
   }
@@ -1194,6 +1542,7 @@ function runShortcutCommand(command) {
   if ($("commandPalette").open) $("commandPalette").close();
   if ($("settingsDrawer").open) closeSettings();
   if (command === "train") showView("train");
+  else if (command === "xpath") showView("xpath");
   else if (command === "path") showView("path");
   else if (command === "handbook") showView("handbook");
   else if (command === "hint") { showView("train"); toggleHint(); }
